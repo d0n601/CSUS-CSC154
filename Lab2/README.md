@@ -130,7 +130,7 @@ exploit
 ![metasploit_reverseshell](./writeup/images/metasploit_reverseshell.png)
 **Figure 17:** Reverse shell via Metasploit.
 
-We now have a shell on the target machine as the user `www-data`. It is time to escalate our privileges to root.
+We now have a shell on the target machine as the user `www-data` (we've done it two different ways). It is time to escalate our privileges to root.
 
 ### Root
 
