@@ -91,7 +91,7 @@ Now that we are logged into MySQL as the root user, and using TikiWiki's databas
 
 ### User
 
-Now we're logged into the TikiWiki application. As you can see upon logging in, we are prompted to change the password (you know... for security reasons).
+Now we have the login credentials for TikiWiki, so we login. As you can see upon logging in, we are prompted to change the password (you know... for security reasons).
 
 ![tikiwiki_password_change](./writeup/images/tikiwiki_password_change.png)
 **Figure 12:** TwikiWiki admin panel, prompting password change.
@@ -111,7 +111,7 @@ All that's left to do is launch our reverse shell listener on our attacking mach
 ![exec_reverse_shell](./writeup/images/exec_reverse_shell.png)
 **Figure 15:** Executing our reverse shell via Firefox.
 
-![rev_shell_connected](./writeup/images/reverse_shell_connected.png)
+![rev_shell_connected](./writeup/images/rev_shell_connected.png)
 **Figure 16:** Reverse shell caught via Netcat.
 
 Before we move on to rooting the box, lets use the Metasploit console to gain our shell directly. This saves us some time in that we do not need to upload our own php reverse shell. In order to do so, we open msfconsole and issue the following commands.
