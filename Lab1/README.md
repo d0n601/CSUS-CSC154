@@ -1,4 +1,5 @@
 # CSUS CSC154: Lab 1
+[Lab 1 PDF](./writeup/pdf/CSC154_Lab1_Ryan_Kozak.pdf)
 
 ## Introduction
 Buffer overflow is defined as the condition in which a program attempts to write data beyond the boundaries of pre-allocated fixed length buffers. This vulnerability can be utilized by an attacker to alter the flow control of the program, even execute arbitrary pieces of code. This vulnerability arises due to the mixing of the storage for data (e.g. buffers) and the storage for controls (e.g. return addresses): an overflow in the data part can affect the control flow of the program, because an overflow can change the return address.

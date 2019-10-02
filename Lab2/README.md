@@ -1,4 +1,5 @@
 # CSUS CSC154: Lab 2
+[Lab 2 PDF](./writeup/pdf/CSC154_Lab2_Ryan_Kozak.pdf)
 
 ## Information Gathering
 
