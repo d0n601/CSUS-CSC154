@@ -167,7 +167,7 @@ Lastly, we ssh into the box as the root user using the private key we now know t
 
 
 # Conclusion
-The Metasploitable VM is full of vulnerabilities, that is why it was created. We've only taken one of the many paths available to root this machine. There are multiple vulnerabilities in [Tikiwiki](https://tiki.org/HomePage) alone, of which we only explored one. Additionally, there are many other ports running services we've not yet explored.
+The Metasploitable VM is full of vulnerabilities, that is why it was created. We've only taken one of the many paths available to root this machine. There are multiple vulnerabilities in [Tikiwiki](https://tiki.org/HomePage) alone, of which we only explored two. Additionally, there are many other ports running services we've not yet explored.
 
 ## Mitigation Tactics
 
@@ -175,4 +175,4 @@ The Metasploitable VM is full of vulnerabilities, that is why it was created. We
 Updating [Tikiwiki](https://tiki.org/HomePage) is the most obvious way to mitigate this attack. The version running on this box is over a decade old, as [Tikiwiki](https://tiki.org/HomePage) is now on version 20.x. It's rather surprising that this version of [Tikiwiki](https://tiki.org/HomePage) allows allows php files to be uploaded through the backup tool. This is a terrible idea. It's also peculiar that it stores passwords for its users in plain text, this is also a terrible idea.
 
 ### Server Configuration
-There is also little to no reason that the server should have the MySQL port open to remove connections. Allowing only local connections to the database would allow the application to run without opening up the ability for attackers to connect to the database directly. Lastly, our privilege escalation for this box involves reading the `/root` directory as the `www-data` user. The `/root` directory should never be readable by users without root privileges. If that were the case we would not have been able to determine the public key in order to reverse engineer the private key.  
+There is also little to no reason that the server should have the MySQL port open to remote connections. Allowing only local connections to the database would allow the application to run without opening up the ability for attackers to connect to the database directly. Lastly, our privilege escalation for this box involves reading the `/root` directory as the `www-data` user. The `/root` directory should never be readable by users without root privileges. If that were the case we would not have been able to determine the public key in order to reverse engineer the private key.  
