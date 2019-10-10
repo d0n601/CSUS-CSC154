@@ -23,13 +23,13 @@ In order to program our USB devices we've installed the [Arduino IDE](https://ww
 **Figure 2:** Download the Arduino IDE.
 
 We've then configured the Arduino IDE to include the DigiSpark board, so that we may use the `DigiKeyboard.h` library.   
-[digistump_json](./images/digistump_json.png)
+![digistump_json](./images/digistump_json.png)
 **Figure 3:** Add DigiStump board manager url to configuration.
 
-[digistump_boardmanager](./images/digistump_boardmanager.png)
+![digistump_boardmanager](./images/digistump_boardmanager.png)
 **Figure 4:** Board manager downloading DigiStump's board libraries.
 
-[digistump_default](./images/digistump_setboard.png)
+![digistump_default](./images/digistump_setboard.png)
 **Figure 5:** Set board to Digispark Default.
 
 The following code is what we've developed thus far to infect Linux machines upon plugin.
