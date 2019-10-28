@@ -21,20 +21,24 @@ echo "Hello World"
 
 We place the above CGI program into `/usr/lib/cgi-bin`, and set its permissions to `755`. This folder is the default CGI directory for the Apache web server.
 
-To access this CGI program from the Web, you can either use a browser by typing the following URL:
-http://localhost/cgi-bin/myprog.cgi, or use the following command line program curl to
-do the same thing:
 
-Adding flag, place it somewhere where `www-data` can atleast grab it.
+![1_create_myprog](./writeup/images/1_create_myprog.png)  
+**Figure 1:** Creating and setting permissions for `myprog.cgi`.
+
+
+Now we can access this CGI program via our web browser by visigin `http://localhost/cgi-bin/myprog.cgi`  
+![1_visiting_cgi](./writeup/images/1_visiting_cgi.png)  
+**Figure 2:** Visiting the newly created CGI program.  
+
+**TO DO**: Adding flag, place it somewhere where `www-data` can atleast grab it.  
 
 
 ### Attack
-After the above CGI program is set up, you can launch the Shellshock
-attack. The attack does not depend on what is in the CGI program, as it targets the Bash program, which
-is invoked first, before the CGI script is executed. Your goal is to launch the attack through the URL
-http://localhost/cgi-bin/myprog.cgi, such that you can achieve something that you cannot
-do as a remote user. For example, you can delete some file on the server, or fetch some file (that is not
-accessible to the attacker) from the server.
+After the above CGI program is set up, you can launch the Shellshock attack. The attack does not depend on what is in the CGI program, as it targets the Bash program, which is invoked first, before the CGI script is executed. Your goal is to launch the attack through the URL `http://localhost/cgi-bin/myprog.cgi`, such that you can achieve something that you cannot do as a remote user. For example, you can delete some file on the server, or fetch some file (that is not accessible to the attacker) from the server.
+
+* [CVE-2014-6271](https://nvd.nist.gov/vuln/detail/CVE-2014-6271)
+* [CVE-2014-6278](https://nvd.nist.gov/vuln/detail/CVE-2014-6278)  
+* [OWASP Shellshock](https://www.owasp.org/images/1/1b/Shellshock_-_Tudor_Enache.pdf)
 
 
 Please describe how your attack works. Please pinpoint from the Bash source code variables.c
