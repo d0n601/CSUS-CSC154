@@ -26,24 +26,45 @@ We place the above CGI program into `/usr/lib/cgi-bin`, and set its permissions 
 **Figure 1:** Creating and setting permissions for `myprog.cgi`.
 
 
-Now we can access this CGI program via our web browser by visigin `http://localhost/cgi-bin/myprog.cgi`  
+Now we can access this CGI program via our web browser by visiting `http://localhost/cgi-bin/myprog.cgi`  
 ![1_visiting_cgi](./writeup/images/1_visiting_cgi.png)  
 **Figure 2:** Visiting the newly created CGI program.  
 
-**TO DO**: Adding flag, place it somewhere where `www-data` can atleast grab it.  
-
+In order to demonstrate the attack, lets put a `flag.txt` in the `seed` user's `Downloads` folder. It's safe to say that this folder shouldn't be accessible remotely.  
+![create_flag](./writeup/images/create_flag.png)  
+**Figure 3:** Placing a flag to grab during attack.
 
 ### Attack
-After the above CGI program is set up, you can launch the Shellshock attack. The attack does not depend on what is in the CGI program, as it targets the Bash program, which is invoked first, before the CGI script is executed. Your goal is to launch the attack through the URL `http://localhost/cgi-bin/myprog.cgi`, such that you can achieve something that you cannot do as a remote user. For example, you can delete some file on the server, or fetch some file (that is not accessible to the attacker) from the server.
+After the above CGI program is set up, we can launch the Shellshock attack. Our goal is to launch the attack through the URL `http://localhost/cgi-bin/myprog.cgi`, such that we can achieve something that cannot (should not) be achievable by a remote user. 
 
-* [CVE-2014-6271](https://nvd.nist.gov/vuln/detail/CVE-2014-6271)
-* [CVE-2014-6278](https://nvd.nist.gov/vuln/detail/CVE-2014-6278)  
-* [OWASP Shellshock](https://www.owasp.org/images/1/1b/Shellshock_-_Tudor_Enache.pdf)
+Using *curl* we can include our exploit in the header variable. In figure 4 below we're using many header fields as examples to show that field doesn't really matter.  
+
+```bash
+curl -H "ANYTHING: () { :;}; echo; /bin/cat /home/seed/flag.txt" http://localhost/cgi-bin/myprog.cgi
+```
+
+![cgi_exploited](./writeup/images/cgi_exploited.png)  
+**Figure 4:** Exploiting CGI with many headers, same payload.
 
 
-Please describe how your attack works. Please pinpoint from the Bash source code variables.c
-where the vulnerability is. You just need to identify the line in the initialize shell variables()
-function (between Lines 308 and 369)  
+**Get a reverse shell with Kali if there's time**
+
+
+Breaking down the *curl* command we can see that the request url `http://localhost/cgi-bin/myprog.cgi` is our vulnerable CGI application running locally. The header we've included can be called whatever we want in this case, but its value must contain the payload `() { :;}; echo; /bin/cat /home/seed/flag.txt`, where `(){ :;};` is an empty environmental variable, and where `/bin/cat /home/seed/flag.txt` can be whatever commands we wish to try and execute on the machine.
+
+>Function definitions are exported by encoding them within the environment variable list as variables whose values begin with parentheses ("()") followed by a function definition. The new instance of Bash, upon starting, scans its environment variable list for values in this format and converts them back into internal functions. [4](https://security.stackexchange.com/questions/68448/where-is-bash-shellshock-vulnerability-in-source-code)
+
+The vulnerability appears in the Bash source code [`variables.c`](http://www.cis.syr.edu/~wedu/seed/Labs_12.04/Software/Shellshock/files/variables.c) **line 351** `parse_and_execute (temp_string, name, SEVAL_NONINT|SEVAL_NOHIST);`.
+
+This was patched in the following way.
+
+```c
+ 	  if (posixly_correct == 0 || legal_identifier (name))
+	    parse_and_execute (temp_string, name, SEVAL_NONINT|SEVAL_NOHIST);
+``` 
+
+An [explanation of the patch](https://stackoverflow.com/questions/26022248/is-the-behavior-behind-the-shellshock-vulnerability-in-bash-documented-or-at-all) from Stack Overflow
+> You can see that in the new code, a flag called SEVAL_ONECMD has been added that tells Bash to only evaluate the first command (that is, the function definition) and SEVAL_FUNCDEF to only allow function definitions.
 
 
 ## Task 2: Attack Set-UID programs
@@ -100,3 +121,12 @@ This is a writing task, please answer the following questions in your report:
 
 2. What is the fundamental problem of the Shellshock vulnerability? What can we learn from this
 vulnerability?
+
+
+# References
+
+1. [CVE-2014-6271](https://nvd.nist.gov/vuln/detail/CVE-2014-6271)
+2. [OWASP Shellshock](https://www.owasp.org/images/1/1b/Shellshock_-_Tudor_Enache.pdf)
+3. [GitHub Repo by OPSXCQ](https://github.com/opsxcq/exploit-CVE-2014-6271)
+4. [Security Stack Exchange](https://security.stackexchange.com/questions/68448/where-is-bash-shellshock-vulnerability-in-source-code)
+5. [Stack Overflow](https://stackoverflow.com/questions/26022248/is-the-behavior-behind-the-shellshock-vulnerability-in-bash-documented-or-at-all)
