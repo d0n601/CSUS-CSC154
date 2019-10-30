@@ -168,6 +168,9 @@ Since we replaced `system()` with `execve()`, we're not able to exploit the vuln
 
 1. Other than the two scenarios described above (CGI and Set-UID program), is there any other scenario that could be affected by the Shellshock attack? We will give you bonus points if you can identify a significantly different scenario and you have verified the attack using your own experiment.
 	* From what I've read, Shellshock impacts services on IRC, SSH, DHCP, SIP, SMTP, and *[more](https://github.com/mubix/shellshocker-pocs)*. Shellshock is a bash vulnerability, so if an attacker can determine that a program uses bash, and can control the value of an environmental variable that will be passed to bash, there is chance of compromise.
+	* Here we have an example of code execution from an environmental variable passed via ssh, `1LC_X="() { :; }; /bin/sh -c 'whoami'" ssh testuser@localhost -o SendEnv=LC_X1`
+	![3_ssh_env_var](./writeup/images/3_ssh_env_var.png)  
+	**Figure 12:** `whoami` executed immediately upon login through environmental variable.
 
 2. What is the fundamental problem of the Shellshock vulnerability? What can we learn from this
 vulnerability?
