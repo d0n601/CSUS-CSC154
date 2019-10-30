@@ -69,11 +69,13 @@ An [explanation of the patch](https://stackoverflow.com/questions/26022248/is-th
 
 ## Task 2: Attack Set-UID programs
 
-In this task, we use Shellshock to attack Set-UID programs, with a goal to gain the root privilege. Before the attack, we need to first let /bin/sh to point to /bin/bash (by default, it points to /bin/dash in our SEED Ubuntu 12.04 VM). You can do it using the following command: `sudo ln -sf /bin/bash /bin/sh`
-
+In this task, we use Shellshock to attack Set-UID programs, with a goal to gain the root privilege. Before the attack, we need to first let `/bin/sh` to point to `/bin/bash` (by default, it points to `/bin/dash` in our SEED Ubuntu 12.04 VM). We do this using the following command: `sudo ln -sf /bin/bash /bin/sh`.  
+![2_point_sh](./writeup/images/2_point_sh.png)  
+**Figure 5:** Pointing `/bin/sh` to `/bin/bash`.
+        
 
 ### Task 2A  
-The following program is a Set-UID program, which simply runs the "/bin/ls -l" command. Please compile this code, make it a Set-UID program, and make root be its owner. As we know, the system() function will invoke "/bin/sh -c" to run the given command, which means `/bin/bash` will be invoked. Can you use the Shellshock vulnerability to gain the root privilege?
+The following program is a Set-UID program, which simply runs the `/bin/ls -l` command. We compile this code, make it a Set-UID program, and make root be its owner.
 
 ```c
 #include <stdio.h>
@@ -83,7 +85,31 @@ void main() {
 }
 ```
 
-It should be noted that using `setuid(geteuid())` to turn the real uid into the effective uid is not a common practice in Set-UID programs, but it does happen.  
+![2_create_setuid_program](./writeup/images/2_create_setuid_program.png)  
+**Figure 6:** Preparing the Set-UID program.
+
+
+Can we use the Shellshock vulnerability to gain the root privilege? ** Yes.**  
+All we need to do to exploit this is add an environmental variable with the Shellshock payload inside of it. This can be achieved through via the command `export shock=(){ :; }; bash`, in which we create an environmental variable called *shock*, add our payload, and after it *bash* gets executed.
+
+![2_root](./writeup/images/2_root.png)  
+**Figure 7:** Root shell via Shellshock and Set-UID program. 
+
+When we remove this environmental variable `shock`, the program is no loner exploited to call our root shell, and acts as "intended".  
+![2_remove_envvar](./writeup/images/2_remove_envvar.png)  
+**Figure 8:** Remove `shock`, environmental variable and program executes normally. 
+
+
+### Task 2B 
+
+Now, we remove the `setuid(geteuid())` statement from the above program, and repeat your attack.
+
+![2b_fails](./writeup/images/2b_fails.png)  
+**Figure 9:** without `setuid(geteuid())` the attack fails.
+
+ Can you gain the root privilege? Please show us your experiment results. In our experiment, when that line is removed, the attack fails (with that line, the attack is successful). In other words, if the real user id and the effective user id are the same, the function defined in the environment variable is evaluated, and thus the Shellshock vulnerability will be exploited. However, if the real user id and the effective user id are not the same, the function defined in the environment variable is not evaluated at all. This is verified from the bash source code (variables.c, between Lines 308 to 369). You can get the source code from the lab web site. Please pinpoint exactly which line causes the difference, and explain why Bash does that.
+
+
 
 
 ### Task 2C  
@@ -104,13 +130,6 @@ int main() {
     return 0 ;
 }
 ```
-
-
-### Task 2B 
-
-Now, remove the `setuid(geteuid())` statement from the above program, and repeat your attack. Can you gain the root privilege? Please show us your experiment results. In our experiment, when that line is removed, the attack fails (with that line, the attack is successful). In other words, if the real user id and the effective user id are the same, the function defined in the environment variable is evaluated, and thus the Shellshock vulnerability will be exploited. However, if the real user id and the effective user id are not the same, the function defined in the environment variable is not evaluated at all. This is verified from the bash source code (variables.c, between Lines 308 to 369). You can get the source code from the lab web site. Please pinpoint exactly which line causes the difference, and explain why Bash does that.
-
-
 
 
 
