@@ -47,20 +47,18 @@ curl -H "ANYTHING: () { :;}; echo; /bin/cat /home/seed/flag.txt" http://localhos
 **Figure 4:** Exploiting CGI with many headers, same payload.
 
 
-**Get a reverse shell with Kali if there's time**
+Breaking down the *curl* command we can see that the request url `http://localhost/cgi-bin/myprog.cgi` is our vulnerable CGI application running locally. The header we've included can be called whatever we want in this case, but its value must contain the payload `() { :;}; echo; /bin/cat /home/seed/flag.txt`, where `(){ :;};` is an empty environmental variable, and where `/bin/cat /home/seed/flag.txt` can be whatever commands we wish to try and execute on the machine. We could easily include a reverse shell within this payload.
 
-
-Breaking down the *curl* command we can see that the request url `http://localhost/cgi-bin/myprog.cgi` is our vulnerable CGI application running locally. The header we've included can be called whatever we want in this case, but its value must contain the payload `() { :;}; echo; /bin/cat /home/seed/flag.txt`, where `(){ :;};` is an empty environmental variable, and where `/bin/cat /home/seed/flag.txt` can be whatever commands we wish to try and execute on the machine.
-
+This is possible because of the way Bash handles function definitions as environmental variables,  
 >Function definitions are exported by encoding them within the environment variable list as variables whose values begin with parentheses ("()") followed by a function definition. The new instance of Bash, upon starting, scans its environment variable list for values in this format and converts them back into internal functions. [4](https://security.stackexchange.com/questions/68448/where-is-bash-shellshock-vulnerability-in-source-code)
 
 The vulnerability appears in the Bash source code [`variables.c`](http://www.cis.syr.edu/~wedu/seed/Labs_12.04/Software/Shellshock/files/variables.c) **line 351** `parse_and_execute (temp_string, name, SEVAL_NONINT|SEVAL_NOHIST);`.
 
-This was patched in the following way.
+This was *[patched](https://gist.github.com/drj11/e85ca2d7503f28ebfde8)* in the following way.
 
 ```c
- 	  if (posixly_correct == 0 || legal_identifier (name))
-	    parse_and_execute (temp_string, name, SEVAL_NONINT|SEVAL_NOHIST);
+	if (legal_identifier (name))
+	    parse_and_execute (temp_string, name, SEVAL_NONINT|SEVAL_NOHIST|SEVAL_FUNCDEF|SEVAL_ONECMD);
 ``` 
 
 An [explanation of the patch](https://stackoverflow.com/questions/26022248/is-the-behavior-behind-the-shellshock-vulnerability-in-bash-documented-or-at-all) from Stack Overflow
@@ -89,7 +87,7 @@ void main() {
 **Figure 6:** Preparing the Set-UID program.
 
 
-Can we use the Shellshock vulnerability to gain the root privilege? ** Yes.**  
+Can we use the Shellshock vulnerability to gain the root privilege? **Yes.**  
 All we need to do to exploit this is add an environmental variable with the Shellshock payload inside of it. This can be achieved through via the command `export shock='(){ :; }; bash'`, in which we create an environmental variable called *shock*, add our payload, and after it *bash* gets executed.
 
 ![2_root](./writeup/images/2_root.png)  
