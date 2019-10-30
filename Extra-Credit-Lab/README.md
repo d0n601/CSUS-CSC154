@@ -121,7 +121,19 @@ Following down the code we see we see two calls to `strcpy()`. The extra command
 ```
 
 
-Explain why Bash does that.
+The Bash info page helps to explain why this happens,  
+> 	  Turn on privileged mode.  In this mode, the `$BASH_ENV' and
+      `$ENV' files are not processed, shell functions are not
+      inherited from the environment, and the `SHELLOPTS',
+      `BASHOPTS', `CDPATH' and `GLOBIGNORE' variables, if they
+      appear in the environment, are ignored.  If the shell is
+      started with the effective user (group) id not equal to the
+      real user (group) id, and the `-p' option is not supplied,
+      these actions are taken and the effective user id is set to
+      the real user id.  If the `-p' option is supplied at startup,
+      the effective user id is not reset.  Turning this option off
+      causes the effective user and group ids to be set to the real
+      user and group ids.
 
 
 
@@ -184,6 +196,8 @@ vulnerability?
 2. [OWASP: Shellshock](https://www.owasp.org/images/1/1b/Shellshock_-_Tudor_Enache.pdf)
 3. [GitHub: Repo by OPSXCQ](https://github.com/opsxcq/exploit-CVE-2014-6271)
 4. [Security Stack Exchange: Shell Shock Vulnerability in Source Code](https://security.stackexchange.com/questions/68448/where-is-bash-shellshock-vulnerability-in-source-code)
-5. [Stack Overflow: Shellshock Behavior](https://stackoverflow.com/questions/26022248/is-the-behavior-behind-the-shellshock-vulnerability-in-bash-documented-or-at-all)
-6. [Stack Overflow: system() vs execve()](https://stackoverflow.com/questions/27461936/system-vs-execve)
-7. [Open Group: execve()](https://pubs.opengroup.org/onlinepubs/9699919799/functions/execve.html)
+5. [Stack Overflow: Shellshock Behavior](https://stackoverflow.com/
+questions/26022248/is-the-behavior-behind-the-shellshock-vulnerability-in-bash-documented-or-at-all)
+6. [Unix: Bash -p option](https://www.unix.com/shell-programming-and-scripting/279698-bash-read-p-option.html)
+7. [Stack Overflow: system() vs execve()](https://stackoverflow.com/questions/27461936/system-vs-execve)
+8. [Open Group: execve()](https://pubs.opengroup.org/onlinepubs/9699919799/functions/execve.html)
