@@ -90,7 +90,7 @@ void main() {
 
 
 Can we use the Shellshock vulnerability to gain the root privilege? ** Yes.**  
-All we need to do to exploit this is add an environmental variable with the Shellshock payload inside of it. This can be achieved through via the command `export shock=(){ :; }; bash`, in which we create an environmental variable called *shock*, add our payload, and after it *bash* gets executed.
+All we need to do to exploit this is add an environmental variable with the Shellshock payload inside of it. This can be achieved through via the command `export shock='(){ :; }; bash'`, in which we create an environmental variable called *shock*, add our payload, and after it *bash* gets executed.
 
 ![2_root](./writeup/images/2_root.png)  
 **Figure 7:** Root shell via Shellshock and Set-UID program. 
@@ -107,30 +107,53 @@ Now, we remove the `setuid(geteuid())` statement from the above program, and rep
 ![2b_fails](./writeup/images/2b_fails.png)  
 **Figure 9:** without `setuid(geteuid())` the attack fails.
 
- Can you gain the root privilege? Please show us your experiment results. In our experiment, when that line is removed, the attack fails (with that line, the attack is successful). In other words, if the real user id and the effective user id are the same, the function defined in the environment variable is evaluated, and thus the Shellshock vulnerability will be exploited. However, if the real user id and the effective user id are not the same, the function defined in the environment variable is not evaluated at all. This is verified from the bash source code (variables.c, between Lines 308 to 369). You can get the source code from the lab web site. Please pinpoint exactly which line causes the difference, and explain why Bash does that.
+When that line is removed, the attack fails. The lab states that this about why. 
+> In other words, if the real user id and the effective user id are the same, the function defined in the environment variable is evaluated, and thus the Shellshock vulnerability will be exploited. However, if the real user id and the effective user id are not the same, the function defined in the environment variable is not evaluated at all. 
+
+Looking at [`variables.c`](http://www.cis.syr.edu/~wedu/seed/Labs_12.04/Software/Shellshock/files/variables.c) we see a conditional statement on **Line 342** `if (privmode == 0 && read_but_dont_execute == 0 && STREQN ("() {", string, 4))`, which is 
+true in this case.
+
+Following down the code we see we see two calls to `strcpy()`. The extra command is executed before `parse_and_execute()` gets called, see below.
+```c
+  strcpy (temp_string, name);
+  temp_string[char_index] = ' ';
+  strcpy (temp_string + char_index + 1, string);
+
+  parse_and_execute (temp_string, name, SEVAL_NONINT|SEVAL_NOHIST);
+```
+
+
+Please pinpoint exactly which line causes the difference, and explain why Bash does that.
 
 
 
 
 ### Task 2C  
-Another way to invoke a program in C is to use `execve()`, instead of `system()`. The following program does exactly what the program in Task 2A does. Please compile the code, and make it a Set-UID program that is owned by root. Launch your Shellshock attack on this new program, and describe and explain your observation.
+Another way to invoke a program in C is to use `execve()`, instead of `system()`. The following program does exactly what the program in Task 2A does. We compile the code, make it a Set-UID program that is owned by root, and launch our Shellshock attack on this new program.
 
 ```c
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 char **environ;
+
 int main() {
     char *argv[3];
+
     argv[0] = "/bin/ls";
     argv[1] = "-l";
     argv[2] = NULL;
+
     setuid(geteuid()); // make real uid = effective uid.
     execve(argv[0], argv, environ);
+   
     return 0 ;
 }
 ```
 
+![create_setuid_program](./images/writeup/create_setuid_program.png)  
+**Figure 10:** Create Set-UID program that uses `execve()`.
 
 
 ## Task 3: Questions
