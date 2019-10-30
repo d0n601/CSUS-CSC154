@@ -122,20 +122,7 @@ Following down the code we see we see two calls to `strcpy()`. The extra command
 
 
 The Bash info page helps to explain why this happens,  
-> 	  Turn on privileged mode.  In this mode, the `$BASH_ENV' and
-      `$ENV' files are not processed, shell functions are not
-      inherited from the environment, and the `SHELLOPTS',
-      `BASHOPTS', `CDPATH' and `GLOBIGNORE' variables, if they
-      appear in the environment, are ignored.  If the shell is
-      started with the effective user (group) id not equal to the
-      real user (group) id, and the `-p' option is not supplied,
-      these actions are taken and the effective user id is set to
-      the real user id.  If the `-p' option is supplied at startup,
-      the effective user id is not reset.  Turning this option off
-      causes the effective user and group ids to be set to the real
-      user and group ids.
-
-
+>  Turn on privileged mode.  In this mode, the `$BASH_ENV' and `$ENV' files are not processed, shell functions are not inherited from the environment, and the `SHELLOPTS', `BASHOPTS', `CDPATH' and `GLOBIGNORE' variables, if they appear in the environment, are ignored.  If the shell is started with the effective user (group) id not equal to the real user (group) id, and the `-p' option is not supplied, these actions are taken and the effective user id is set to the real user id.  If the `-p' option is supplied at startup, the effective user id is not reset.  Turning this option off causes the effective user and group ids to be set to the real user and group ids. [Bash Man Page](http://linuxcommand.org/lc3_man_pages/bash1.html)
 
 
 ### Task 2C  
@@ -178,26 +165,26 @@ Since we replaced `system()` with `execve()`, we're not able to exploit the vuln
 
 
 ## Task 3: Questions
-This is a writing task, please answer the following questions in your report:
 
 1. Other than the two scenarios described above (CGI and Set-UID program), is there any other scenario that could be affected by the Shellshock attack? We will give you bonus points if you can identify a significantly different scenario and you have verified the attack using your own experiment.
+	* From what I've read, Shellshock impacts services on IRC, SSH, DHCP, SIP, SMTP, and *[more](https://github.com/mubix/shellshocker-pocs)*. Shellshock is a bash vulnerability, so if an attacker can determine that a program uses bash, and can control the value of an environmental variable that will be passed to bash, there is chance of compromise.
 
 2. What is the fundamental problem of the Shellshock vulnerability? What can we learn from this
 vulnerability?
-* Very important and wide spread pieces of software can still have undiscovered vulnerabilities with catastrophic consequences.
-* Not all remote code execution exploits have complicated payloads, Shellshock is short enough that I remember it by now just after this lab.
-* The `system()` command can cause problems, as shell behavior depends on the user who run the command.
-* Use `execve()` in place of `system()` whenever possible. 
+	* Very important and wide spread pieces of software can still have undiscovered vulnerabilities with catastrophic consequences.
+	* Not all remote code execution exploits have complicated payloads, Shellshock is short enough that I remember it by now just after this lab.
+	* The `system()` command can cause problems, as shell behavior depends on the user who run the command.
+	* Use `execve()` in place of `system()` whenever possible. 
 
 
 # References
 
 1. [CVE-2014-6271](https://nvd.nist.gov/vuln/detail/CVE-2014-6271)
 2. [OWASP: Shellshock](https://www.owasp.org/images/1/1b/Shellshock_-_Tudor_Enache.pdf)
-3. [GitHub: Repo by OPSXCQ](https://github.com/opsxcq/exploit-CVE-2014-6271)
+3. [GitHub: CVE-2014-6271 exploit by OPSXCQ](https://github.com/opsxcq/exploit-CVE-2014-6271)
 4. [Security Stack Exchange: Shell Shock Vulnerability in Source Code](https://security.stackexchange.com/questions/68448/where-is-bash-shellshock-vulnerability-in-source-code)
-5. [Stack Overflow: Shellshock Behavior](https://stackoverflow.com/
-questions/26022248/is-the-behavior-behind-the-shellshock-vulnerability-in-bash-documented-or-at-all)
-6. [Unix: Bash -p option](https://www.unix.com/shell-programming-and-scripting/279698-bash-read-p-option.html)
+5. [Stack Overflow: Shellshock Behavior](https://stackoverflow.com/questions/26022248/is-the-behavior-behind-the-shellshock-vulnerability-in-bash-documented-or-at-all)
+6. [Linux Command: Bash Man Page](http://linuxcommand.org/lc3_man_pages/bash1.html)
 7. [Stack Overflow: system() vs execve()](https://stackoverflow.com/questions/27461936/system-vs-execve)
 8. [Open Group: execve()](https://pubs.opengroup.org/onlinepubs/9699919799/functions/execve.html)
+9. [Github: Shell Shocker by mubix](https://github.com/mubix/shellshocker-pocs)
