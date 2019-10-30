@@ -88,24 +88,24 @@ void main() {
 
 
 Can we use the Shellshock vulnerability to gain the root privilege? **Yes.**  
-All we need to do to exploit this is add an environmental variable with the Shellshock payload inside of it. This can be achieved through via the command `export shock='(){ :; }; bash'`, in which we create an environmental variable called *shock*, add our payload, and after it *bash* gets executed.
+All we need to do to exploit this is add an environmental variable with the Shellshock payload inside of it. This can be achieved via the command `export shock='(){ :; }; bash'`, in which we create an environmental variable called *shock*, add our payload, and after it *bash* gets executed.
 
 ![2_root](./writeup/images/2_root.png)  
 **Figure 7:** Root shell via Shellshock and Set-UID program. 
 
-When we remove this environmental variable `shock`, the program is no loner exploited to call our root shell, and acts as "intended".  
+When we remove this environmental variable `shock`, the program executes as "intended".  
 ![2_remove_envvar](./writeup/images/2_remove_envvar.png)  
 **Figure 8:** Remove `shock`, environmental variable and program executes normally. 
 
 
 ### Task 2B 
 
-Now, we remove the `setuid(geteuid())` statement from the above program, and repeat your attack.
+Now, we remove the `setuid(geteuid())` statement from the above program, and repeat our attack.
 
 ![2b_fails](./writeup/images/2b_fails.png)  
 **Figure 9:** without `setuid(geteuid())` the attack fails.
 
-When that line is removed, the attack fails. The lab states that this about why. 
+When that line is removed, the attack fails. The lab outline explains why. 
 > In other words, if the real user id and the effective user id are the same, the function defined in the environment variable is evaluated, and thus the Shellshock vulnerability will be exploited. However, if the real user id and the effective user id are not the same, the function defined in the environment variable is not evaluated at all. 
 
 Looking at [`variables.c`](http://www.cis.syr.edu/~wedu/seed/Labs_12.04/Software/Shellshock/files/variables.c) we see a conditional statement on **Line 342** `if (privmode == 0 && read_but_dont_execute == 0 && STREQN ("() {", string, 4))`, which is 
