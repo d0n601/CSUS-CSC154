@@ -118,18 +118,18 @@ Following down the code we see we see two calls to `strcpy()`. The extra command
   strcpy (temp_string, name);
   temp_string[char_index] = ' ';
   strcpy (temp_string + char_index + 1, string);
-
+  // SHELL SHOCK !
   parse_and_execute (temp_string, name, SEVAL_NONINT|SEVAL_NOHIST);
 ```
 
 
-Please pinpoint exactly which line causes the difference, and explain why Bash does that.
+Explain why Bash does that.
 
 
 
 
 ### Task 2C  
-Another way to invoke a program in C is to use `execve()`, instead of `system()`. The following program does exactly what the program in Task 2A does. We compile the code, make it a Set-UID program that is owned by root, and launch our Shellshock attack on this new program.
+Another way to invoke a program in C is to use `execve()`, instead of `system()`. The following program does exactly what the program in Task 2A does. We compile the code, make it a Set-UID program that is owned by root.
 
 ```c
 #include <string.h>
@@ -150,10 +150,21 @@ int main() {
    
     return 0 ;
 }
-```
+```  
 
-![create_setuid_program](./images/writeup/create_setuid_program.png)  
-**Figure 10:** Create Set-UID program that uses `execve()`.
+![2c_create_setuid_program](./writeup/images/2c_create_setuid_program.png)  
+**Figure 10:** Create Set-UID program that uses `execve()`.  
+
+
+Now, when launch our Shellshock attack on this new program.  
+![2c_results](./writeup/images/2c_results.png)  
+**Figure 11:** Attack does not work through `execve()` function.  
+
+
+We see from Figure 11 above that the attack is not effective on this source code. This is because `system()` will call the shell, in this case we've set it to `/bin/bash` where we know our Shellshock vulnerability is. The `execve()` function does not use the shell. [The function definition](https://pubs.opengroup.org/onlinepubs/9699919799/functions/execve.html) for `execve()` states, 
+>The exec family of functions shall replace the current process image with a new process image. The new image shall be constructed from a regular, executable file called the new process image file. There shall be no return from a successful exec, because the calling process image is overlaid by the new process image.
+
+Since we replaced `system()` with `execve()`, we're not able to exploit the vulnerability in `/bin/bash` for Task 2C as we were in 2A.
 
 
 ## Task 3: Questions
@@ -163,12 +174,18 @@ This is a writing task, please answer the following questions in your report:
 
 2. What is the fundamental problem of the Shellshock vulnerability? What can we learn from this
 vulnerability?
+* Very important and wide spread pieces of software can still have undiscovered vulnerabilities with catastrophic consequences.
+* Not all remote code execution exploits have complicated payloads, Shellshock is short enough that I remember it by now just after this lab.
+* The `system()` command can cause problems, as shell behavior depends on the user who run the command.
+* Use `execve()` in place of `system()` whenever possible. 
 
 
 # References
 
 1. [CVE-2014-6271](https://nvd.nist.gov/vuln/detail/CVE-2014-6271)
-2. [OWASP Shellshock](https://www.owasp.org/images/1/1b/Shellshock_-_Tudor_Enache.pdf)
-3. [GitHub Repo by OPSXCQ](https://github.com/opsxcq/exploit-CVE-2014-6271)
-4. [Security Stack Exchange](https://security.stackexchange.com/questions/68448/where-is-bash-shellshock-vulnerability-in-source-code)
-5. [Stack Overflow](https://stackoverflow.com/questions/26022248/is-the-behavior-behind-the-shellshock-vulnerability-in-bash-documented-or-at-all)
+2. [OWASP: Shellshock](https://www.owasp.org/images/1/1b/Shellshock_-_Tudor_Enache.pdf)
+3. [GitHub: Repo by OPSXCQ](https://github.com/opsxcq/exploit-CVE-2014-6271)
+4. [Security Stack Exchange: Shell Shock Vulnerability in Source Code](https://security.stackexchange.com/questions/68448/where-is-bash-shellshock-vulnerability-in-source-code)
+5. [Stack Overflow: Shellshock Behavior](https://stackoverflow.com/questions/26022248/is-the-behavior-behind-the-shellshock-vulnerability-in-bash-documented-or-at-all)
+6. [Stack Overflow: system() vs execve()](https://stackoverflow.com/questions/27461936/system-vs-execve)
+7. [Open Group: execve()](https://pubs.opengroup.org/onlinepubs/9699919799/functions/execve.html)
