@@ -174,10 +174,12 @@ Since we replaced `system()` with `execve()`, we're not able to exploit the vuln
 
 2. What is the fundamental problem of the Shellshock vulnerability? What can we learn from this
 vulnerability?
-	* Very important and wide spread pieces of software can still have undiscovered vulnerabilities with catastrophic consequences.
-	* Not all remote code execution exploits have complicated payloads, Shellshock is short enough that I remember it by now just after this lab.
-	* The `system()` command can cause problems, as shell behavior depends on the user who run the command.
-	* Use `execve()` in place of `system()` whenever possible. 
+	* The fundamental problem with Shellshock is the way bash encodes function definitions as environmental variables, which allows remote code execution. An issue with RCE in such an important piece of software as the bash shell can cause havoc in the world.
+	* From Shellshock we can learn the following.
+		* Very important and wide spread pieces of software can still have undiscovered vulnerabilities with catastrophic consequences.
+		* Not all remote code execution exploits have complicated payloads, Shellshock is short enough that I remember it by now just after this lab.
+		* The `system()` command can cause problems, as shell behavior depends on the user who run the command.
+		* Use `execve()` in place of `system()` whenever possible. 
 
 
 # References
