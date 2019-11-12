@@ -76,8 +76,18 @@ We can execute some system commands such as `route`, to view and modify the netw
 ![commands_1](./writeup/images/commands_1.png)  
 **Figure 15:** Running `route` and `sysinfo` through Meterpreter.  
 
+There are a lot of useful scripts in Meterpreter than can be run. Once we're the root user on the machine many of them aren't necessary though. This is because we don't need to gather information we already know, or escalate privileges to the account we've already got access to. Some of the useful ones in our case can be found in the `post/multi/gather` folder. These scripts will search the system for various things such as stored passwords, keys, etc.  In the figure below use use `run post/multi/gather/ssh_creds` to try and gather some ssh key credentials. It fails to find any, but it's a neat script none the less.  
+![ssh_creds_fail](./writeup/images/ssh_creds_fail.png)  
+**Figure 16:** Running `post/multi/gather/ssh_creds`.  
+
+To steal all the systems configuration files for analysis we can use the command `run post/linux/gather/enum_configs`.  
+![enum_configs](./writeup/images/enum_configs.png)  
+**Figure 17:** Finding and gathering all system configuration files via `post/linux/gather/enum_configs`.  
 
 
-### Pivoting  
 
-Firebase blabla
+## Pivoting  
+
+It is time to pivot from the victim we've compromised at address `192.168.57.3` to another target host on the network. To get another victim running, we'll simply clone our Metasploitable VM, and launch the clone.  Now we run an Nmap scan once more to find this new target.  
+
+
