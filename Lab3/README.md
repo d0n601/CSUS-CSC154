@@ -40,7 +40,7 @@ Now that we've added our target to Armitage, we select it by clicking on it, and
 > Hail Mary pass : a long forward pass in football thrown into or near the end zone in a last-ditch attempt to score as time runs out.
 
 The Hail Mary Attack is a last-ditch effort to break into a system, it is reckless, unstealthy, and desperate. It throws every known exploit possible at the machine hoping that something works. Realistically, you shouldn't ever do this, but for the lab it's fun.  So, here we go.  
-![hail_mary_really](./writeup/images/hail_mary_really.png)  
+![hail_mary_really](./writeup/images/hailmary_really.png)  
 **Figure 7:** Are you sure you really want to do something this crazy? Yes we are!  
 
 ![hail_mary_progress](./writeup/images/hail_mary_progress.png)  
