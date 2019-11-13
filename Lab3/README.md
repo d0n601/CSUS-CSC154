@@ -40,7 +40,7 @@ Now that we've added our target to Armitage, we select it by clicking on it, and
 > Hail Mary pass : a long forward pass in football thrown into or near the end zone in a last-ditch attempt to score as time runs out.
 
 The Hail Mary Attack is a last-ditch effort to break into a system, it is reckless, unstealthy, and desperate. It throws every known exploit possible at the machine hoping that something works. Realistically, you shouldn't ever do this, but for the lab it's fun.  So, here we go.  
-![hail_mary_really](./writeup/images/hailmary_really.png)  
+![really](./writeup/images/really.png)  
 **Figure 7:** Are you sure you really want to do something this crazy? Yes we are!    
 
 The Hail Mary attack has given us 4 sessions on the machine. As seen in Figure 9 below.  
@@ -48,7 +48,7 @@ The Hail Mary attack has given us 4 sessions on the machine. As seen in Figure 9
 **Figure 8:** 4 sessions opened after Hail Mary.  
 
 Some of these sessions are as the user `www-data`. Instead of using one of these sessions and having to escalate privileges, we'll check to see if any of our sessions have gotten us `root` access. As we can see, session 2 is `root`.  So for the following steps, we'll be using this session.  
-![root_shell](./writeup/images/root_shell.png)  
+![shell_2_is_root](./writeup/images/shell_2_is_root.png)  
 **Figure 9:** Session 2 is `root` user, as seen in the shell output for `whoami`.  
 
 Now, we select from the left-hand column `post->multi->manage-shell_to_meterpreter`, and run it. We must make sure to run it on session 2, because as we stated previously, this session is root. This will give us a meterpreter session as the root user.  
@@ -101,7 +101,10 @@ Now we can right click on our firebase (original victim at `192.168.57.3`) and s
 ![add_pivot](./writeup/images/add_pivot.png)  
 **Figure 19:**  Adding pivot point from `192.168.57.3`.  
 
-We now click our next target and use `exploit/multi/samba/usermap_script`, setting the `LHOST` to the address of our firebase at `192.168.57.3`. We see the arrow becomes solid green, establishing our pivot point through the network to `192.168.57.5`.  
+![pivoting_setup](./writeup/images/pivoting_setup.png)  
+**Figure 20:** Pivoting established for `192.168.57.3`.  
+
+We now click our next target and use `exploit/multi/samba/usermap_script`, setting the `LHOST` to the address of our firebase at `192.168.57.3`. We see the arrow becomes solid green, establishing our pivot point through the network to `192.168.57.5`.    
 ![green_arrows](./writeup/images/green_arrows.png)  
 **Figure 20:** Exploited `192.168.57.5` via pivot.  
 
