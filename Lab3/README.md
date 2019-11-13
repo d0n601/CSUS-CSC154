@@ -88,6 +88,27 @@ To steal all the systems configuration files for analysis we can use the command
 
 ## Pivoting  
 
-It is time to pivot from the victim we've compromised at address `192.168.57.3` to another target host on the network. To get another victim running, we'll simply clone our Metasploitable VM, and launch the clone.  Now we run an Nmap scan once more to find this new target.  
+It is time to pivot from the victim machine we've compromised at address `192.168.57.3` to another target host on the network. The victim we've compromised is now our firebase.  
+
+To get another victim running, we'll simply clone our Metasploitable VM, and launch the clone.  
+![run_clone](./writeup/images/run_clone.png)  
+**Figure 19:** 2 copies of Metasploitable VM running.
+
+
+ Now we run an Nmap scan once more to find this new target.  
+![nmap_scan_2](./writeup/images/nmap_scan_2.png)  
+**Figure 20:** New Nmap scan reveals cloned Metasploitable VM is at `192.168.57.5`.
+
+
+Now we can right click on our firebase (original victim at `192.168.57.3`) and select `Meterpreter -> Pivoting -> Setup`. In the setup window we choose `Add Pivot`.  
+![add_pivot](./writeup/images/add_pivot.png)  
+**Figure 21:**  Adding pivot point from `192.168.57.3`.  
+
+We now click our next target and use `exploit/multi/samba/usermap_script`, setting the `LHOST` to the address of our firebase at `192.168.57.3`. We see the arrow becomes solid green, establishing our pivot point through the network to `192.168.57.5`.  
+![green_arrows](./writeup/images/green_arrows.png)  
+**Figure 22:** Exploited `192.168.57.5` via pivot.  
+
+
+
 
 
