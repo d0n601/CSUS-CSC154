@@ -59,27 +59,25 @@ Now, we select from the left-hand column `post->multi->manage-shell_to_meterpret
 **Figure 11:** Completion of `shell_to_meterpreter`.
 
 Once the `shell_to_meterpreter` command is completed, we can right-click the victim host icon and select `Meterpreter 5 -> Interact -> Meterpreter Shell`. This will open a Meterpreter session.  
-![interact_meterpreter_shell](./writeup/images/interact_meterpreter_shell.png)  
-**Figure 12:** Opening a Meterpreter Shell to interact with.  
 
 Through the Meterpreter shell we can run a hashdump via `run post/linux/gather/hashdump`.  
-![run_hashdump](./writeup/images/run_hashdump.png)  
-**Figure 13:** Running hasdump through Meterpreter.
+![hashdump](./writeup/images/hashdump.png)  
+**Figure 12:** Running hasdump through Meterpreter.
 
 
 In the Meterpreter session, we'll play with some more commands. The Meterpreter Cheat Sheet found [**here**](https://www.blueliv.com/downloads/Meterpreter_cheat_sheet_v0.1.pdf) provides a good reference of available commands.  
 
 We can execute some system commands such as `route`, to view and modify the networking table and `sysinfo` to get more information about our target host.  
 ![commands_1](./writeup/images/commands_1.png)  
-**Figure 14:** Running `route` and `sysinfo` through Meterpreter.  
+**Figure 13:** Running `route` and `sysinfo` through Meterpreter.  
 
 There are a lot of useful scripts in Meterpreter than can be run. Once we're the root user on the machine many of them aren't necessary though. This is because we don't need to gather information we already know, or escalate privileges to the account we've already got access to. Some of the useful ones in our case can be found in the `post/multi/gather` folder. These scripts will search the system for various things such as stored passwords, keys, etc.  In the figure below use use `run post/multi/gather/ssh_creds` to try and gather some ssh key credentials. It fails to find any, but it's a neat script none the less.  
 ![ssh_creds_fail](./writeup/images/ssh_creds_fail.png)  
-**Figure 15:** Running `post/multi/gather/ssh_creds`.  
+**Figure 14:** Running `post/multi/gather/ssh_creds`.  
 
 To steal all the systems configuration files for analysis we can use the command `run post/linux/gather/enum_configs`.  
 ![enum_configs](./writeup/images/enum_configs.png)  
-**Figure 16:** Finding and gathering all system configuration files via `post/linux/gather/enum_configs`.  
+**Figure 15:** Finding and gathering all system configuration files via `post/linux/gather/enum_configs`.  
 
 
 
@@ -89,20 +87,20 @@ It is time to pivot from the victim machine we've compromised at address `192.16
 
 To get another victim running, we'll simply clone our Metasploitable VM, and launch the clone.  
 ![run_clone](./writeup/images/run_clone.png)  
-**Figure 17:** 2 copies of Metasploitable VM running.
+**Figure 16:** 2 copies of Metasploitable VM running.
 
 
  Now we run an Nmap scan once more to find this new target.  
 ![nmap_scan_2](./writeup/images/nmap_scan_2.png)  
-**Figure 18:** New Nmap scan reveals cloned Metasploitable VM is at `192.168.57.5`.
+**Figure 17:** New Nmap scan reveals cloned Metasploitable VM is at `192.168.57.5`.
 
 
 Now we can right click on our firebase (original victim at `192.168.57.3`) and select `Meterpreter -> Pivoting -> Setup`. In the setup window we choose `Add Pivot`.  
 ![add_pivot](./writeup/images/add_pivot.png)  
-**Figure 19:**  Adding pivot point from `192.168.57.3`.  
+**Figure 18:**  Adding pivot point from `192.168.57.3`.  
 
 ![pivoting_setup](./writeup/images/pivoting_setup.png)  
-**Figure 20:** Pivoting established for `192.168.57.3`.  
+**Figure 19:** Pivoting established for `192.168.57.3`.  
 
 We now click our next target and use `exploit/multi/samba/usermap_script`, setting the `LHOST` to the address of our firebase at `192.168.57.3`. We see the arrow becomes solid green, establishing our pivot point through the network to `192.168.57.5`.    
 ![green_arrows](./writeup/images/green_arrows.png)  
