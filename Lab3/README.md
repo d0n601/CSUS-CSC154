@@ -1,5 +1,5 @@
 # CSUS CSC154: Lab 3
-[Lab 3 PDF](./writeup/pdf/CSC154_Lab3_Ryan_Kozak.pdf)
+[Lab 3 PDF](./writeup/pdf/CSC154_Lab3_Ryan_kozak.pdf)
 
 ## Goal  
 To use Kali Linux to perform penetration testing towards Metasploitable.  
