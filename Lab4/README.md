@@ -35,7 +35,7 @@ To generate data we'll visit `https://www.heartbleedlabelgg.com` and login as th
 **Figure 5:** Logging in as admin user.  
 
 
-After logging in we'll add `Boby` as friend, by going to `More -> Members`, selcting Boby, and then cliding`Add Friend`.  
+After logging in we'll add `Boby` as friend, by going to `More -> Members`, selecting Boby, and then cliding`Add Friend`.  
 ![4_add_boby](./writeup/images/4_add_boby.png)  
 **Figure 6:** Boby added as a friend.  
 
@@ -69,15 +69,25 @@ The exact content of the private message are present in the `subject` and `body`
 
 ## Task 2: Find the Cause of the Heartbleed Vulnerability  
 
-* Question 2.1: As the length variable decreases, what kind of difference can you observe?
+**Question 2.1:** As the length variable decreases, what kind of difference can you observe?  
+* The length of the response will decrease accordingly. Below are examples of lengths for `0x3E8` bytes, and `0x64` bytes (1000, and 100 in decimal), and their responses. When we set the length below the boundary we receive only `.F` as observable in Figure 13 in answer 2.2.  
+![22_input_1000](./writeup/images/22_input_1000.png)  
+**Figure 12:** Length of `0x3E8` bytes and the response.  
 
-* Question 2.2: As the length variable decreases, there is a boundary value for the input length variable. At or below that boundary, the Heartbeat query will receive a response packet without attaching any extra data (which means the request is benign). Please find that boundary length. You may need to try many different length values until the web server sends back the reply without extra data. To help you with this, when the number of returned bytes is smaller than the expected length, the program will print `Server processed malformed Heartbeat, but did not return any extra data`.  
+![22_input_100](./writeup/images/22_input_100.png)  
+**Figure 13:** Length of `0x64` bytes and the response.  
+
+**Question 2.2:** As the length variable decreases, there is a boundary value for the input length variable. At or below that boundary, the Heartbeat query will receive a response packet without attaching any extra data (which means the request is benign). Please find that boundary length. You may need to try many different length values until the web server sends back the reply without extra data. To help you with this, when the number of returned bytes is smaller than the expected length, the program will print `Server processed malformed Heartbeat, but did not return any extra data`.   
+
+*  The boundary value for input length is `0x16` bytes or `22` in decimal. We can observe this by inputting `0x16` as the length and getting the message `Server processed malformed Heartbeat, but did not return any extra data`.  
+![22_lower_bound](./writeup/images/22_lower_bound.png)  
+**Figure 14:** Boundary value for input length `0x16`.  
+* Increasing the value to `0x17` or `23` in decimal will give us the message `returned more data than it should`. This confirms `0x16` is the bound.  
+![22_lower_bound_over](./writeup/images/22_lower_bound_over.png)  
+**Figure 15:** `0x17` is one above the bound, confirming the bound to be `0x16`.  
+
 
 
 ## Task 3: Countermeasure and Bug Fix  
-To fix the Heartbleed vulnerability, the best way is to update the OpenSSL library to the newest version. This can be achieved using the following commands. It should be noted that once it is updated, it is hard to go back to the vulnerable version. Therefore, make sure you have finished the previous tasks before doing the update. You can also take a snapshot of your VM before the update.
-
-```
-sudo apt-get update
-sudo apt-get upgrade
-```
+To fix the Heartbleed vulnerability, the best way is to update the `OpenSSL` library to the newest version. This can be achieved using the following command, which updates the repository and then upgrades all packages `sudo apt-get update && sudo apt-get upgrade`.  
+**Note:** We'll need to run this on the host machine, not the attacker. We'll also need to temporarily set the Virtual Box Network Adapter to `NAT` to have Internet access.
