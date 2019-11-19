@@ -89,5 +89,130 @@ The exact content of the private message are present in the `subject` and `body`
 
 
 ## Task 3: Countermeasure and Bug Fix  
-To fix the Heartbleed vulnerability, the best way is to update the `OpenSSL` library to the newest version. This can be achieved using the following command, which updates the repository and then upgrades all packages `sudo apt-get update && sudo apt-get upgrade`.  
-**Note:** We'll need to run this on the host machine, not the attacker. We'll also need to temporarily set the Virtual Box Network Adapter to `NAT` to have Internet access.
+To fix the Heartbleed vulnerability, the best way is to update the `OpenSSL` library to the newest version. Attempting to update via `sudo apt-get update && sudo apt-get upgrade` did not succeed. After updating all packages the version of `OpenSSL` remained the same. I chose to upgrade it to version `1.0.2l` via *[this method](https://www.miguelvallejo.com/updating-to-openssl-1-0-2g-on-ubuntu-server-12-04-14-04-lts-to-stop-cve-2016-0800-drown-attack/)*, which involves using `wget` to retrieve the tarball building it locally. **Note:** We'll need to run this on the host machine, not the attacker. We'll also need to temporarily set the Virtual Box Network Adapter to `NAT` to have Internet access.  
+![new_open_ssl](./writeup/images/new_open_ssl.png)  
+**Figure 16:** `OpenSSL` updated to `1.0.2l`, which is no longer vulnerable to Heartbleed.  
+
+### Task 3.1  
+We repeat the attack after updating to `OpenSSL version 1.0.2l` and see that we can no longer get a response besides `.F`. Heartbleed has been patched and so we can no longer steal data from memory.  
+![after_patch](./writeup/images/after_patch.png)  
+**Figure 17:** Server response after patching Heartbleed.  
+
+### Task 3.2  
+The objective of this task is to figure out how to fix the Heartbleed bug in the source code. The following C-style structure (not exactly the same as the source code) is the format of the Heartbeat request/response packet.  
+
+```c
+struct {
+	HeartbeatMessageType type; // 1 byte: request or the response
+	uint16 payload_length;    // 2 byte: the length of the payload
+	opaque payload[HeartbeatMessage.payload_length];
+	opaque padding[padding_length];
+} HeartbeatMessage;
+```  
+
+The first field (1 byte) of the packet is the type information, and the second field (2 bytes) is the payload length, followed by the actual payload and paddings. The size of the payload should be the same as the value in the payload length field, but in the attack scenario, payload length can be set to a different value. The following code snippet shows how the server copies the data from the request packet to the response packet.
+
+```c
+/* Allocate memory for the response, size is 1 byte
+* message type, plus 2 bytes payload length, plus
+* payload, plus padding
+*/
+
+unsigned int payload;
+unsigned int padding = 16; /* Use minimum padding */
+
+// Read from type field first
+
+hbtype = *p++; //After this instruction, the pointer p will point to the payload_length field.
+
+// Read from the payload_length field
+// from the request packet
+n2s(p, payload); 
+/* Function n2s(p, payload) reads 16 bits from pointer p and store the
+   value in the INT variable "payload". */
+
+pl=p; // pl points to the beginning of the payload content
+
+if (hbtype == TLS1_HB_REQUEST)
+{
+	unsigned char *buffer, *bp;
+	int r;
+
+	/* Allocate memory for the response, size is 1 byte
+	* message type, plus 2 bytes payload length, plus
+	* payload, plus padding
+	*/
+
+	buffer = OPENSSL_malloc(1 + 2 + payload + padding);
+	bp = buffer;
+
+	// Enter response type, length and copy payload
+	*bp++ = TLS1_HB_RESPONSE;
+	s2n(payload, bp);
+
+	// copy payload
+	memcpy(bp, pl, payload); /* pl is the pointer which
+	* points to the beginning
+	of the payload content */
+
+
+	bp += payload;
+
+	// Random padding
+	RAND_pseudo_bytes(bp, padding);
+
+	// this function will copy the 3+payload+padding bytes
+	// from the buffer and put them into the heartbeat response
+	// packet to send back to the request client side.
+	OPENSSL_free(buffer);
+	r = ssl3_write_bytes(s, TLS1_RT_r = ssl3_write_bytes(s, TLS1_RT_HEARTBEAT, buffer,
+	3 + payload + padding);
+
+}
+```
+
+The problem from the code above is that is that it reads directly from the `payload_length` field of the request packet, which is what we've been playing with in our attacks.  
+```c
+// Read from the payload_length field
+// from the request packet
+n2s(p, payload);
+```
+
+A solution to the code above can be found by looking at the patch directly provided by `OpenSSL`, as their code is open source.
+
+```c
+
+/* Read type and payload length first */
+
+if (1 + 2 + 16 > s->s3->relent)
+
+return 0;
+
+/* silently discard */
+
+hbtype = *p++;
+
+n2s(p, payload);
+
+if (1 + 2 + payload + 16 > s->s3->rrec.length)
+
+return 0;
+
+/* silently discard per RFC 6520 sec. 4 */
+
+pl = p;
+```
+
+The code above will check that the heartbeat request is not `0` (first `if` statement), and then confirm that request length is valid (second `if` statement).  
+
+
+We will comment on the discussion below.  
+ * **Alice** thinks the fundamental cause is missing the boundary checking during the buffer copy.
+ 	* This is true, the vulnerability is caused by a lack of confirming the length of the packet.
+ * **Bob** thinks the cause is missing the user input validation
+ 	* This is also true, the code used the user specified length, and did not validate it against the actual length of the packet.
+ * **Eva** thinks that we can just delete the length value from the packet to solve everything.  
+ 	* This doesn't make sense, we need the length for functionality purposes.
+
+
+
