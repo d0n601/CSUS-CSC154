@@ -1,5 +1,5 @@
-# CSUS CSC154: Lab 4
-[Lab 4 PDF](./writeup/)
+# CSUS CSC154: Lab 4 - Heartbleed
+[Lab 4 PDF](./writeup/pdf/CSC154_Lab4_Ryan_Kozak.pdf)
 
 ## Goal  
 To fully understand the weakness of the implementation of the Heartbeat protocol.
