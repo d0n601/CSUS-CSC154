@@ -35,7 +35,7 @@ To generate data we'll visit `https://www.heartbleedlabelgg.com` and login as th
 **Figure 5:** Logging in as admin user.  
 
 
-After logging in we'll add `Boby` as friend, by going to `More -> Members`, selecting Boby, and then cliding`Add Friend`.  
+After logging in we'll add `Boby` as friend, by going to `More -> Members`, selecting Boby, and then clicking`Add Friend`.  
 ![4_add_boby](./writeup/images/4_add_boby.png)  
 **Figure 6:** Boby added as a friend.  
 
@@ -45,7 +45,7 @@ Lastly we will send Boby a private message.
 **Figure 7:** Sending Boby a private message.
 
 
-After we have done enough interactions as legitimate users, you can launch the attack and see what information we can get out of the victim server. Writing the program to launch the Heartbleed attack from scratch is not easy, because it requires the low-level knowledge of the Heartbeat protocol. Fortunately, other people have already written the attack code. Therefore, we will use the existing code to gain first-hand experience in the Heartbleed attack. The code that we use is called **[attack.py](http://www.cis.syr.edu/~wedu/seed/Labs_12.04/Networking/Heartbleed/attack.py)**, which was originally written by Jared Stafford. 
+After we have done enough interactions as legitimate users, we can launch the attack and see what information we can get out of the victim server. Writing the program to launch the Heartbleed attack from scratch is not easy, because it requires the low-level knowledge of the Heartbeat protocol. Fortunately, other people have already written the attack code. Therefore, we will use the existing code to gain first-hand experience in the Heartbleed attack. The code that we use is called **[attack.py](http://www.cis.syr.edu/~wedu/seed/Labs_12.04/Networking/Heartbleed/attack.py)**, which was originally written by Jared Stafford. 
 
 We run the attack code via `python ./attack.py www.heartbleedlabelgg.com`. The attack must be run multiple times to get useful data. After running it several times we've retrieved the following valuable pieces of information.  
 
@@ -54,14 +54,14 @@ User name and password for `admin`, which was the account we logged in as.
 **Figure 8:** Username and password data for `admin`.
 
 
-For the user's activity, we can see that he navigated to the profile for Boby, and composed a private message.  
+For the user's activity, we can see that he (we) navigated to the profile for Boby, and composed a private message.  
 ![6_navigate_bobby](./writeup/images/6_naviage_bobby.png)  
 **Figure 9:** User visits profile for Boby.  
 
 ![6_compose_message](./writeup/images/6_compose_message.png)  
 **Figure 10:** Composing a private message to Boby.  
 
-The exact content of the private message are present in the `subject` and `body` parameters of the private message request, as well as the recipient's `guid`.      
+The exact contents of the private message are present in the `subject` and `body` parameters of the private message request, as well as the recipient's `guid` showing us to shall receive the message.      
 ![7_private_message](./writeup/images/7_private_message.png)  
 **Figure 11:** Contents of private message.  
 
@@ -89,7 +89,7 @@ The exact content of the private message are present in the `subject` and `body`
 
 
 ## Task 3: Countermeasure and Bug Fix  
-To fix the Heartbleed vulnerability, the best way is to update the `OpenSSL` library to the newest version. Attempting to update via `sudo apt-get update && sudo apt-get upgrade` did not succeed. After updating all packages the version of `OpenSSL` remained the same. I chose to upgrade it to version `1.0.2l` via *[this method](https://www.miguelvallejo.com/updating-to-openssl-1-0-2g-on-ubuntu-server-12-04-14-04-lts-to-stop-cve-2016-0800-drown-attack/)*, which involves using `wget` to retrieve the tarball building it locally. **Note:** We'll need to run this on the host machine, not the attacker. We'll also need to temporarily set the Virtual Box Network Adapter to `NAT` to have Internet access.  
+To fix the Heartbleed vulnerability, the best way is to update the `OpenSSL` library to the newest version. Attempting to update via `sudo apt-get update && sudo apt-get upgrade` did not succeed. After updating all packages the version of `OpenSSL` remained the same. I chose to upgrade it to version `1.0.2l` via *[this method](https://www.miguelvallejo.com/updating-to-openssl-1-0-2g-on-ubuntu-server-12-04-14-04-lts-to-stop-cve-2016-0800-drown-attack/)*, which involves using `wget` to retrieve the Tarball from OpenSSL's site, and building it locally. **Note:** We'll need to run this on the host machine, not the attacker. We'll also need to temporarily set the Virtual Box Network Adapter to `NAT` to have Internet access.  
 ![new_open_ssl](./writeup/images/new_open_ssl.png)  
 **Figure 16:** `OpenSSL` updated to `1.0.2l`, which is no longer vulnerable to Heartbleed.  
 
@@ -212,7 +212,9 @@ We will comment on the discussion below.
  * **Bob** thinks the cause is missing the user input validation
  	* This is also true, the code used the user specified length, and did not validate it against the actual length of the packet.
  * **Eva** thinks that we can just delete the length value from the packet to solve everything.  
- 	* This doesn't make sense, we need the length for functionality purposes.
+ 	* This doesn't make sense, we need the length for functionality purposes.  
+
+
 
 
 
