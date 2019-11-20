@@ -194,5 +194,104 @@ In class we also used this method to change the salary of another employee, belo
 **Figure 22:** Boby sees his new salary of `333` when logged in.  
   
 
-## Task 4: Countermeasure - Prepared Statement
-TO DO
+## Task 4: Countermeasure - Prepared Statement  
+A prepared statement will go through the compilation step, and be turned into a pre-compiled query with empty placeholders for data. To run this pre-compiled query, data need to be provided, but these data will not go through the compilation step; instead, they are plugged directly into the pre-compiled query, and are sent to the execution engine. Therefore, even if there is SQL code inside the data, without going through the compilation step, the code will be simply treated as part of data, without any special meaning. This is how prepared statement prevents SQL injection attacks. 
+
+For this task, we use the prepared statement mechanism to fix the SQL injection vulnerabilities exploited in the previous tasks. Then, check whether we can still exploit the vulnerability or not.
+
+The code snipped below is the portion from `unsafe_credential.php` that we need to change.  
+```php
+/* start make change for prepared statement */
+   $sql = "SELECT id, name, eid, salary, birth, ssn, phoneNumber, address, email,nickname,Password 
+           FROM credential 
+           WHERE eid= '$input_eid' and Password='$input_pwd'";
+   if (!$result = $conn->query($sql)) {
+       die('There was an error running the query [' . $conn->error . ']\n');
+   }
+
+   /* convert the select return result into array type */ 
+   $return_arr = array();
+   while($row = $result->fetch_assoc()){
+       array_push($return_arr,$row);
+   }
+
+   /* convert the array type to json format and read out*/ 
+   $json_str = json_encode($return_arr);
+   $json_a = json_decode($json_str,true);
+   $id = $json_a[0]['id'];
+   $name = $json_a[0]['name'];
+   $eid = $json_a[0]['eid'];
+   $salary = $json_a[0]['salary'];
+   $birth = $json_a[0]['birth'];
+   $ssn = $json_a[0]['ssn'];
+   $phoneNumber = $json_a[0]['phoneNumber'];
+   $address = $json_a[0]['address'];
+   $email = $json_a[0]['email'];
+   $pwd = $json_a[0]['Password'];
+   $nickname = $json_a[0]['nickname'];
+   if($id!=""){
+   	drawLayout($id,$name,$eid,$salary,$birth,$ssn,$pwd,$nickname,$email,$address,$phoneNumber); 
+   }else{
+	echo "The account information your provide does not exist\n"; 
+	return;
+   }
+   /* end change for prepared statement */ 
+```
+
+Here is the code after modifying it to use prepared statements.  
+```php
+ /* start make change for prepared statement */
+  $stmt = $conn->prepare("SELECT id, name, eid, salary, birth, ssn, phoneNumber, address, email,nickname,Password FROM credential WHERE eid = ? and Password = ? ");
+  // Bind parameters to the query
+   $stmt->bind_param("is", $input_eid, $input_pwd);
+   $stmt->execute();
+   $stmt->bind_result($bind_id, $bind_name, $bind_eid, $bind_salary, $bind_birth, $bind_ssn, $bind_phoneNumber, $bind_address, $bind_email, $bind_nickname, $bind_Password);
+   $stmt->fetch();
+   if($bind_id!=""){
+   	drawLayout($bind_id, $bind_name, $bind_eid, $bind_salary, $bind_birth, $bind_ssn, $bind_phoneNumber, $bind_address); 
+   }
+   else{
+	echo "The account information your provide does not exist\n"; 
+	return;
+   }
+   /* convert the select return result into array type */ 
+   $return_arr = array();
+   while($row = $result->fetch_assoc()){
+       array_push($return_arr,$row);
+   }
+
+   /* convert the array type to json format and read out*/ 
+   $json_str = json_encode($return_arr);
+   $json_a = json_decode($json_str,true);
+   $id = $json_a[0]['id'];
+   $bind_name = $json_a[0]['name'];
+   $bind_eid = $json_a[0]['eid'];
+   $bind_salary = $json_a[0]['salary'];
+   $bind_birth = $json_a[0]['birth'];
+   $bind_ssn = $json_a[0]['ssn'];
+   $bind_phoneNumber = $json_a[0]['phoneNumber'];
+   $bind_address = $json_a[0]['address'];
+   $bind_email = $json_a[0]['email'];
+   $bind_pwd = $json_a[0]['Password'];
+   $bind_nickname = $json_a[0]['nickname'];
+   if($bind_id!=""){
+   	drawLayout($bind_id,$bind_name,$bind_eid,$bind_salary,$bind_birth,$bind_ssn,$bind_nickname,$bind_email,$bind_address,$bind_phoneNumber); 
+   }else{
+	echo "The account information your provide does not exist\n"; 
+	return;
+   }
+   /* end change for prepared statement */ 
+``` 
+
+When we run our attack from Task 2.1 on the code modified to use prepared statements we get `The account information your provide does not exist`. This is good, because it means it's treating it like a string now, not an executable statement, and there is no one with and `ID` of our exploit code. **Note:** The code function for valid login attempts.  
+
+![attempt_again_1](./writeup/images/attempt_again_1.png)  
+**Figure 23:** Attempting exploit from Task 2.1 on prepared statement code.  
+
+![attempt_again_1_fail](./writeup/images/attempt_again_1_fail.png)  
+**Figure 24:** Attempt from Task 2.1 fails on prepared statements.
+
+Testing the exploit from Task 2.2, in which we use `curl`, it still fails as expected.  
+![curl_fail](./writeup/images/curl_fail.png)  
+**Figure 25:** Exploit via `curl` from Task 2.2 also fails.  
+
