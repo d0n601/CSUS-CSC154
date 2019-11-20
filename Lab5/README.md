@@ -190,7 +190,7 @@ In class we also used this method to change the salary of another employee, belo
 ![ryan_boby](./writeup/images/ryan_boby.png)  
 **Figure 21:** Changing Boby's salary from Ryan's account.  
 
-![confirm_bobby](./writeup/images/confirm_bobby.png)  
+![confirm_boby](./writeup/images/confirm_boby.png)  
 **Figure 22:** Boby sees his new salary of `333` when logged in.  
   
 
