@@ -61,7 +61,7 @@ Email: kying@syr.edu
    $pwd = $json_a[0]['Password'];
    $nickname = $json_a[0]['nickname'];
    if($id!=""){
-   	drawLayout($id,$name,$eid,$salary,$birth,$ssn,$pwd,$nickname,$email,$address,$phoneNumber); 
+   	drawLayout($id,$name,$eid,$salary,$birth,$ssn,$pwd,$nickname,$email,$address,$phoneNumber);
    }else{
 	echo "The account information your provide does not exist\n"; 
 	return;

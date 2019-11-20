@@ -33,8 +33,8 @@ Email: kying@syr.edu
    $conn = getDB();
 
    /* start make change for prepared statement */
-$stmt = $conn->prepare("SELECT id, name, eid, salary, birth, ssn, phoneNumber, address, email,nickname,Password FROM credential WHERE eid = ? and Password = ? ");
-// Bind parameters to the query
+  $stmt = $conn->prepare("SELECT id, name, eid, salary, birth, ssn, phoneNumber, address, email,nickname,Password FROM credential WHERE eid = ? and Password = ? ");
+  // Bind parameters to the query
    $stmt->bind_param("is", $input_eid, $input_pwd);
    $stmt->execute();
    $stmt->bind_result($bind_id, $bind_name, $bind_eid, $bind_salary, $bind_birth, $bind_ssn, $bind_phoneNumber, $bind_address, $bind_email, $bind_nickname, $bind_Password);
@@ -44,7 +44,7 @@ $stmt = $conn->prepare("SELECT id, name, eid, salary, birth, ssn, phoneNumber, a
    }
    else{
 	echo "The account information your provide does not exist\n"; 
-	return;
+	   return;
    }
    /* convert the select return result into array type */ 
    $return_arr = array();

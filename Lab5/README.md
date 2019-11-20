@@ -295,3 +295,5 @@ Testing the exploit from Task 2.2, in which we use `curl`, it still fails as exp
 ![curl_fail](./writeup/images/curl_fail.png)  
 **Figure 25:** Exploit via `curl` from Task 2.2 also fails.  
 
+We need not reattempt Task 2.3, as it wasn't a viable exploit method to being with.  
+
