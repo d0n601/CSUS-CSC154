@@ -1,5 +1,5 @@
 # CSUS CSC154: Lab 5 - SQL Injection  
-[Lab 5 PDF](./writeup/pdf/)  
+[Lab 5 PDF](./writeup/pdf/CSC154_Lab5_Ryan_Kozak.pdf)  
 
 ## Goal  
 To fully understand the weakness in SQL semantics and know how to exploit the vulnerabilities in the interface between web applications and database servers, for retrieval of unallowed data.  
