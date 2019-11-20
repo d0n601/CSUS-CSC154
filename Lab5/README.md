@@ -74,7 +74,7 @@ if(name=='admin'){
 }
 ```
 
-The above SQL statement selects personal employee information such as id, name, salary, ssn etc from the credential table. The variables `$input_eid` and `$input_pwd1` hold the strings typed by users in the login page. Basically, the program checks whether any record matches with the employee ID and password; if there is a match, the user is successfully authenticated, and is given the corresponding employee information. If there is no match, the authentication fails.  
+The above SQL statement selects personal employee information such as id, name, salary, ssn etc from the credential table. The variables `$input_eid` and `$input_pwd` hold the strings typed by users in the login page. Basically, the program checks whether any record matches with the employee ID and password; if there is a match, the user is successfully authenticated, and is given the corresponding employee information. If there is no match, the authentication fails.  
 
 ### Task 2.1: SQL Injection Attack from webpage  
 Our task this time is to log into the web application as the administrator from the login page, so we can see the information of all the employees. We assume that we do know the administrator's account name which is `admin`, but you do not know the `ID` or the `password`.   
@@ -104,7 +104,7 @@ if(name=='admin'){
 
 
 ### Task 2.2: SQL Injection Attack from command line  
-The next task is to repeat Task 2.1, but without using the webpage. We'll use `curl` to make our request to do this through the terminal. We must encode special characters, a goo cheat sheet for url encoded characters can be found **[here](https://www.degraeve.com/reference/urlencoding.php)**.
+The next task is to repeat Task 2.1, but without using the webpage. We'll use `curl` to make our request to do this through the terminal. We must encode special characters, a good cheat sheet for url encoded characters can be found **[here](https://www.degraeve.com/reference/urlencoding.php)**.
 
 Once we've url encode our payload from Task 2.1 it becomes `%27%20OR%20Name%3D%27Admin%27%3B%23`. We will include this modified payload in the `EID` variable of our `GET` request from `curl` as such.
 
@@ -160,7 +160,7 @@ Our payload this time will be `1' salary=999999 WHERE Id='1';#`, since we know t
  Using the same vulnerability in the above `UPDATE` statement, malicious employees can also change
 other people's data. The goal for this task is to modify another employee's password, and then demonstrate that we can successfully log into the victim's account using the new password. The assumption here is that we already know the name of the employee (e.g. Ryan) on whom you want to attack. 
 
-Since the database stores the hash value of passwords instead of the plaintext password string, we'll need to hash the password we want to include in our payload. Lookingat the `unsafe_edit.php` code to see how password is being stored we can determine that it's using `SHA1` as its hash function. `$input_pwd = sha1($input_pwd)`.  
+Since the database stores the hash value of passwords instead of the plaintext password string, we'll need to hash the password we want to include in our payload. Looking at the `unsafe_edit.php` code to see how password is being stored we can determine that it's using `SHA1` as its hash function. `$input_pwd = sha1($input_pwd)`.  
 
 We'll simply use PHP to hash the password we'd like to use in our payload, which is `TacoBellD0g`.  
 ```php
@@ -195,9 +195,9 @@ In class we also used this method to change the salary of another employee, belo
   
 
 ## Task 4: Countermeasure - Prepared Statement  
-A prepared statement will go through the compilation step, and be turned into a pre-compiled query with empty placeholders for data. To run this pre-compiled query, data need to be provided, but these data will not go through the compilation step; instead, they are plugged directly into the pre-compiled query, and are sent to the execution engine. Therefore, even if there is SQL code inside the data, without going through the compilation step, the code will be simply treated as part of data, without any special meaning. This is how prepared statement prevents SQL injection attacks. 
+A prepared statement will go through the compilation step, and be turned into a pre-compiled query with empty placeholders for data. To run this pre-compiled query, data needs to be provided, but this data will not go through the compilation step; instead, it is plugged directly into the pre-compiled query, and sent to the execution engine. Therefore, even if there is SQL code inside the data, without going through the compilation step, **the code will be simply treated as part of data, without any special meaning**. This is how prepared statement prevents SQL injection attacks. 
 
-For this task, we use the prepared statement mechanism to fix the SQL injection vulnerabilities exploited in the previous tasks. Then, check whether we can still exploit the vulnerability or not.
+For this task, we use the prepared statement mechanism to fix the SQL injection vulnerabilities exploited in the previous tasks. Then, we check whether we can still exploit the vulnerability or not.
 
 The code snipped below is the portion from `unsafe_credential.php` that we need to change.  
 ```php
@@ -283,7 +283,7 @@ Here is the code after modifying it to use prepared statements.
    /* end change for prepared statement */ 
 ``` 
 
-When we run our attack from Task 2.1 on the code modified to use prepared statements we get `The account information your provide does not exist`. This is good, because it means it's treating it like a string now, not an executable statement, and there is no one with and `ID` of our exploit code. **Note:** The code function for valid login attempts.  
+When we run our attack from Task 2.1 on the code modified to use prepared statements we get `The account information your provide does not exist`. This is good, because it means it's treating it like a string now, not an executable statement, and there is no one with an `ID` matching that of our exploit code, because the `ID` should be an integer. **Note:** The fixed code does function for valid login attempts.  
 
 ![attempt_again_1](./writeup/images/attempt_again_1.png)  
 **Figure 23:** Attempting exploit from Task 2.1 on prepared statement code.  
@@ -296,4 +296,56 @@ Testing the exploit from Task 2.2, in which we use `curl`, it still fails as exp
 **Figure 25:** Exploit via `curl` from Task 2.2 also fails.  
 
 We need not reattempt Task 2.3, as it wasn't a viable exploit method to being with.  
+
+Here is the vulnerable code for `unsafe_edit.php`.  
+```php
+   // Don't do this, this is not safe against SQL injection attack
+   $sql="";
+   if($input_pwd!=''){
+   	$input_pwd = sha1($input_pwd);
+   	$sql = "UPDATE credential SET nickname='$input_nickname',email='$input_email',address='$input_address',Password='$input_pwd',PhoneNumber='$input_phonenumber' where ID=$input_id;";
+   }else{
+   	$sql = "UPDATE credential SET nickname='$input_nickname',email='$input_email',address='$input_address',PhoneNumber='$input_phonenumber' where ID=$input_id;";
+   }
+   $conn->query($sql);
+   $conn->close();	
+```
+
+We can patch this code to use prepared statements as such.  
+```php
+  $stmt = $conn->prepare("UPDATE credential SET nickname = ?, email = ?, address = ?, PhoneNumber = ? WHERE ID = ?");
+
+   if($input_pwd!=''){
+   	$input_pwd = sha1($input_pwd);
+        $stmt = $conn->prepare("UPDATE credential SET nickname = ?, email = ?, address = ?, Password = ?PhoneNumber = ? WHERE ID = ?");
+         $stmt->bind_param("sssssi", $input_nickname, $input_email, $input_address, $input_pwd, $input_PhoneNumber, $input_id);
+   }else{
+      $stmt->bind_param("ssssi", $input_nickname, $input_email, $input_address, $input_PhoneNumber, $input_id);
+      $stmt = $conn->prepare("UPDATE credential SET nickname = ?, email = ?, address = ?, PhoneNumber = ? WHERE ID = ?");
+   }
+
+   $stmt->execute();
+   $stmt->bind_result($bind_id, $bind_name, $bind_eid, $bind_salary, $bind_birth, $bind_ssn, $bind_phoneNumber, $bind_address, $bind_email, $bind_nickname, $bind_Password);
+   
+   $stmt->fetch();
+   $conn->close();
+```
+
+When we repeat our exploits from Task 3 they all fail due to this new protection. First we'll attempt to login as Ryan and have him change his own salary to `999999` as Alice did previously in Task 3.1.  
+![ryan_salary_fail](./writeup/images/ryan_salary_fail.png)  
+**Figure 26:** Ryan trying to change his salary after prepared statements.  
+![ryan_salary_fail_2](./writeup/images/ryan_salary_fail_2.png)  
+**Figure 27:** Salary for Ryan unchanged. 
+
+In the code four `unsafe_edit.php`, there is simply a redirect, and no message to alert us that the exploit has failed as there was in `unsafe_credential.php`. As we can see from the figures above though, the exploit no longer works.  
+
+Lastly, we'll repeat our exploit from Task 3.2, this time Ryan's account is trying to change the password for Alice to match his own new password of `TacoBellD0g`.  
+![alice_password_fail](./writeup/images/alice_password_fail.png)  
+**Figure 28:** Ryan attempting to exploit password change for Alice after prepared statements.  
+
+![alice_password_fail_2](./writeup/images/alice_password_fail_2.png)  
+**Figure 29:** Password change exploit for Alice fails after adding prepared statements.  
+
+
+
 

@@ -27,17 +27,16 @@ Email: kying@syr.edu
    	$input_pwd = sha1($input_pwd);
         $stmt = $conn->prepare("UPDATE credential SET nickname = ?, email = ?, address = ?, Password = ?PhoneNumber = ? WHERE ID = ?");
          $stmt->bind_param("sssssi", $input_nickname, $input_email, $input_address, $input_pwd, $input_PhoneNumber, $input_id);
+         $stmt->execute();
+         $stmt->bind_result($bind_id, $bind_name, $bind_eid, $bind_salary, $bind_birth, $bind_ssn, $bind_phoneNumber, $bind_address, $bind_email, $bind_nickname, $bind_Password);
+         $stmt->fetch();
    }else{
       $stmt->bind_param("ssssi", $input_nickname, $input_email, $input_address, $input_PhoneNumber, $input_id);
       $stmt = $conn->prepare("UPDATE credential SET nickname = ?, email = ?, address = ?, PhoneNumber = ? WHERE ID = ?");
+      $stmt->execute();
+      $stmt->bind_result($bind_id, $bind_name, $bind_eid, $bind_salary, $bind_birth, $bind_ssn, $bind_phoneNumber, $bind_address, $bind_email, $bind_nickname, $bind_Password);
+      $stmt->fetch();
    }
-
-   $stmt->execute();
-
-
-   //$stmt->bind_result($bind_id, $bind_name, $bind_eid, $bind_salary, $bind_birth, $bind_ssn, $bind_phoneNumber, $bind_address, $bind_email, $bind_nickname, $bind_Password);
-   
-   $stmt->fetch();
 
    $conn->close();	
 
