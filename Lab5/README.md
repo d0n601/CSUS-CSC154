@@ -153,7 +153,7 @@ Our payload this time will be `1' salary=999999 WHERE Id='1';#`, since we know t
 ![alice_payload](./writeup/images/alice_payload.png)  
 **Figure 14:** Payload to increase Alice's salary to `999999`.  
 
-![alice_money](./writeup/iamges/alice_money.png)  
+![alice_money](./writeup/images/alice_money.png)  
 **Figure 15:** Exploitation of `UPDATE` successful, as Alice now has salary `999999`.  
 
 ### Task 3.2: SQL Injection Attack on UPDATE Statement — modify other people's password.
