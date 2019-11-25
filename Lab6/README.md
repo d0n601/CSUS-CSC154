@@ -30,16 +30,22 @@ following JavaScript program will display an alert window:
 <script>alert('xss');</script>
 ```
 
-To accomplish this, we simply login as Samy, and navigate to edit our profile. As can be seen in Figure 1 below, we've placed our Java Script payload in the "Brief Descriptoin" portion of Samy's profile.  
+To accomplish this, we simply login as Samy, and navigate to edit our profile. As can be seen in Figure 1 below, we've placed our JavaScript payload in the "Brief Descriptoin" portion of Samy's profile.  
 ![1_1_samy](./writeup/images/1_1_samy.png)  
-**Figure 1:** Java Script alert window payload to demonstrate XSS.  
+**Figure 1:** JavaScript alert window payload to demonstrate XSS.  
+
+![1_2_samy](./writeup/images/1_2_samy.png)  
+**Figure 2:** JavaScript alert window fires when Samy's profile is visited.  
 
 
 ### Task 2: Posting a Malicious Message to Display Cookies
-The objective of this task is to embed a JavaScript program in our Elgg profile, such that when another user views our profile, the user’s cookies will be displayed in the alert window. This can be done by adding some additional code to the JavaScript program in the previous task:  
+The objective of this task is to embed a JavaScript program in our Elgg profile, such that when another user views our profile, the user's cookies will be displayed in the alert window. This can be done by adding some additional code to the JavaScript program in the previous task, more specifically `document.cookie` as such: 
 ```javascript
 <script>alert(document.cookie);</script>
 ```
+
+To accomplish this, we repeat the previous task, but replace the `'xss'` string, with `document.cookie`.
+
 
 
 ### Task 3: Stealing Cookies from the Victim’s Machine  
