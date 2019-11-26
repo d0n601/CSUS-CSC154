@@ -216,6 +216,12 @@ The devices are cheap and small, so carrying three of them should be no issue. I
 #### Dead Drop  
 If an attacker were to want to leave one of these devices in a public place, they'd need to play a numbers game. The likely hood that a victim who uses Windows, finds a devices configured to infect windows, is simply a matter of how many Windows users exists vs OSX users in whatever location the device is dropped. Knowing how many OSX vs Windows users exist in the location of the drop will determine the success rate.
 
+### Further  
+More work that we would do in the future would be to include more technically advanced payloads tailored to each operating system. We would like to check if we are root/admin user, and if so, modify our script to be run on startup for a persistent infection.
+
+If our payloads were to use known exploits, we may be able to escalate privileges to root/admin when we had only normal use privileges. This would then allow us to run our script on startup. 
+
+Additionally, we've done very little to hide our tracks. There is much that could be done there.
 
 
 ## References
