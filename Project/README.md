@@ -198,6 +198,26 @@ TODO
 TODO
 
 
+
+## Conclusion
+We've configured our BadUSB devices to infect Linux, Windows and OSX machines. Upon plugin, our device will execute a payload to join our Botnet.
+
+### Limitations
+Ideally, the same BadUSB device would be able to infect Windows, OSX, and Linux. However, from what we've researched this may not be technically achievable given the way USB functions. There seems to be no way to query information from the machine, the device simply sends keystrokes blindly. At this time a DigiSpark must be configured to infect one specific operating system, because currently we do not have knowledge of how to detect which operating system a victim's computer is running. 
+
+We did attempt loading all of our payloads onto one device (Hail Mary). This failed because arbitrary keystrokes were executed on a machine either before or after that machines OS specific code was run. This resulted in unpredictable behavior, which prevented even the correct code from executing sometimes. 
+
+
+### Attack Scenarios
+
+#### Physical Access
+The devices are cheap and small, so carrying three of them should be no issue. If an attacker has physical access to a computer their success rate should be very high. 
+
+#### Dead Drop  
+If an attacker were to want to leave one of these devices in a public place, they'd need to play a numbers game. The likely hood that a victim who uses Windows, finds a devices configured to infect windows, is simply a matter of how many Windows users exists vs OSX users in whatever location the device is dropped. Knowing how many OSX vs Windows users exist in the location of the drop will determine the success rate.
+
+
+
 ## References
 This section is incomplete (obviously). Will finish later.
 
