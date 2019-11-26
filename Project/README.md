@@ -140,7 +140,7 @@ void loop() {
 }
 ```
 
-As you can see above, is very similar to what we've used to exploit Linux machines. The major difference is the way the terminal is opened. We've had to modify the Linux version to use `DigiKeyboard.sendKeyStroke(KEY_SPACE, MOD_GUI_LEFT);`, which will open Spotlight, then we delay for .5 seconds, and search "terminal", delay for .5 seconds, and press enter.
+As you can see above, is very similar to what we've used to exploit Linux machines. The major difference is the way the terminal is opened. We've had to modify our OSX version to use `DigiKeyboard.sendKeyStroke(KEY_SPACE, MOD_GUI_LEFT);`, which will open Spotlight search. The code will delay for .5 seconds, and search "terminal", delay for .5 seconds, and press enter, opening the terminal.
 
 After this, in order to ensure we aren't using Z Shell, we'll enter `bash`. From this point on the rest of the code is exactly the same as our Linux payload.  
 
@@ -193,3 +193,9 @@ TODO
 
 ### Windows   
 TODO
+
+
+## References
+This section is incomplete (obviously). Will finish later.
+
+1. [DigiSpark Apple Keyboard Mod](https://digistump.com/board/index.php?topic=2612.0)
