@@ -145,8 +145,8 @@ As you can see above, is very similar to what we've used to exploit Linux machin
 After this, in order to ensure we aren't using Z Shell, we'll enter `bash`. From this point on the rest of the code is exactly the same as our Linux payload.  
 
  
-#### Windows 
-TODO POWERSHELL!!!!!? Precompile python??
+### Windows 
+What we need to do here is open PowerShell, and download a precompiled payload for the botnet which includes the whole Python library inside of an executable. This is possible, we may have time to complete it, if not, fuck it.
 
 
 ## Botnet  
