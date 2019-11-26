@@ -10,10 +10,9 @@
 
 
 #define MOD_CMD_LEFT 0x00000008
-boolean do_hack = true;
 
 void setup() {
-  DigiKeyboard.sendKeyStroke(0);
+  DigiKeyboard.delay(2000);
   DigiKeyboard.sendKeyStroke(KEY_SPACE, MOD_GUI_LEFT);
   DigiKeyboard.delay(500);
   DigiKeyboard.print("terminal");
