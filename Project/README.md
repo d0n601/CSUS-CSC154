@@ -182,11 +182,14 @@ cd /opt/byob/byob && python server.py --port 1337
 
 ## Examples
 
+### Video
+TODO
+
 ### Linux 
 Below is an example of a client connecting to the C&C server. This is actually Ryan's laptop connecting, after plugging the BadUSB device into it. 
 
 ![infected](./images/infected.png)
-\ **Figure 11:** Session on x at wartop (Ryan's Laptop).  
+**Figure 11:** Session on x at wartop (Ryan's Laptop).  
 
 ### OSX  
 TODO
