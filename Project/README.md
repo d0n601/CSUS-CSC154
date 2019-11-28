@@ -3,6 +3,41 @@
 ## Objective  
 The objective of this project was to create BadUSB devices, that upon plugin, infect victim computers with malware configured to join a botnet.
 
+
+
+## Botnet C&C 
+For our botnet we're using [Build Your Own Botnet](https://github.com/malwaredllc/byob). Our ultimate goal was an easily deployed and managed *command and control server*, with the ability to generate cross platform compatible clients.
+
+
+### Command and Control Server  
+* [Digital Ocean](https://digitalocean.com)
+* [Domain Name](https://sheep.casa)
+* [BYOB](https://github.com/malwaredllc/byob)
+
+
+We've created a VPS on Digital Ocean to run our C&C server. We're using an Ubuntu 18.04 droplet at the cost of $5 per month. Additionally, we've purchased the domain `sheep.casa`, and directed it towards our C&C server.
+
+![digitalocean](./images/digitalocean.png)
+**Figure 1:** Botnet C&C server droplet on Digital Ocean.
+
+![sheep](./images/sheep.png)
+**Figure 2:** ASCII sheep, just for fun.
+
+
+The botnet framework we chose (BYOB) was installed via `git clone git@github.com:malwaredllc/byob.git && cd ./byob/byob && pip install -r requirements.txt &&  mv ../../byob /opt/`. This clones the repository, installs the required python modules, and moves the directory to into `/opt`.  
+
+To launch the botnet we've created a bash script setting the host to `sheep.casa` and the listening port to `1337`. This script is placed in the `/root` directory. 
+
+```bash
+#!/bin/bash
+cd /opt/byob/byob && python server.py --port 1337
+```
+
+![boot_BYOB](./images/boot_BYOB.png)
+**Figure 3:** Botnet server running, no current sessions.
+
+
+
 ## BadUSB  
 To create our BadUSB devices we've used the [DigiSpark](http://digistump.com/products/1) development board by [Digistump](http://digistump.com/). These devices are recognized as USB keyboards by the victims' machines, and will execute keystrokes to deliver our payload.
 
@@ -10,21 +45,21 @@ To create our BadUSB devices we've used the [DigiSpark](http://digistump.com/pro
 We've purchased our BadUSB (DigiSpark) devices via Amazon. We have 12 of these devices spread across our members. They cost about $3 dollars each. 
 
 ![amazon](./images/amazon.png)
-**Figure 1:** DigiSpark boards on Amazon.
+**Figure 4:** DigiSpark boards on Amazon.
 
 In order to program our USB devices we've installed the [Arduino IDE](https://www.arduino.cc/en/Main/Software).  
 ![arduino_download](./images/arduino_download.png)
-**Figure 2:** Download the Arduino IDE.
+**Figure 5:** Download the Arduino IDE.
 
 We've then configured the Arduino IDE to include the DigiSpark board so that we may use the `DigiKeyboard.h` library.   
 ![digistump_json](./images/digistump_json.png)
-**Figure 3:** Add DigiStump board manager url to configuration.
+**Figure 6:** Add DigiStump board manager url to configuration.
 
 ![digistump_boardmanager](./images/digistump_boardmanager.png)
-**Figure 4:** Board manager downloading DigiStump's board libraries.
+**Figure 7:** Board manager downloading DigiStump's board libraries.
 
 ![digistump_default](./images/digistump_setboard.png)
-**Figure 5:** Set board to Digispark Default.
+**Figure 8:** Set board to Digispark Default.
 
 
 ### Linux Payload
@@ -184,37 +219,6 @@ The above code opens powershell to download and execute our `windows_payload.exe
 #### Windows Payload for Botnet
 To generate a Windows client for our botnet, we must run the code from a Windows machine to create an executable. Unfortunately, BYOB has a significant amount of bugs at the moment, and cross platform compatibility is not as it claims to be. **To successfully connect to our botnet from Windows, we needed to host the C&C server on a Windows machine.**
 
-
-## Botnet C&C 
-For our botnet we're using [Build Your Own Botnet](https://github.com/malwaredllc/byob). Our ultimate goal was an easily deployed and managed *command and control server*, with the ability to generate cross platform compatible clients.
-
-
-### Command and Control Server  
-* [Digital Ocean](https://digitalocean.com)
-* [Domain Name](https://sheep.casa)
-* [BYOB](https://github.com/malwaredllc/byob)
-
-
-We've created a VPS on Digital Ocean to run our C&C server. We're using an Ubuntu 18.04 droplet at the cost of $5 per month. Additionally, we've purchased the domain `sheep.casa`, and directed it towards our C&C server.
-
-![digitalocean](./images/digitalocean.png)
-**Figure 6:** Botnet C&C server droplet on Digital Ocean.
-
-![sheep](./images/sheep.png)
-**Figure 7:** ASCII sheep, just for fun.
-
-
-The botnet framework we chose (BYOB) was installed via `git clone git@github.com:malwaredllc/byob.git && cd ./byob/byob && pip install -r requirements.txt &&  mv ../../byob /opt/`. This clones the repository, installs the required python modules, and moves the directory to into `/opt`.  
-
-To launch the botnet we've created a bash script setting the host to `sheep.casa` and the listening port to `1337`. This script is placed in the `/root` directory. 
-
-```bash
-#!/bin/bash
-cd /opt/byob/byob && python server.py --port 1337
-```
-
-![boot_BYOB](./images/boot_BYOB.png)
-**Figure 8:** Botnet server running, no current sessions.
 
 ## Examples
 
