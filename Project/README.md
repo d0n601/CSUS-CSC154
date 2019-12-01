@@ -235,7 +235,9 @@ Below is an example of a client connecting to the C&C server. This is actually R
 TODO
 
 ### Windows   
-TODO
+Below is an example of a Windows client connecting to a Windows C&C host,  
+![session_demo](./images/session_demo.png)  
+**Figure 12:** Windows client connection.
 
 
 
@@ -250,7 +252,7 @@ Ideally, the same BadUSB device would be able to infect Windows, OSX, and Linux.
 We did attempt loading all of our payloads onto one device (Hail Mary). This failed because arbitrary keystrokes were executed on a machine either before or after that machine's OS specific code was run. This resulted in unpredictable behavior, which prevented even the correct code from executing sometimes. 
 
 #### BYOB Botnet
-The botnet framework we chose to use is still very buggy. By the time we concluded that certain limitations could not be overcome, it was no longer an option to pivot the project to a new botnet framework. It turns out the cross platform compatibility of BYOB is not as it claims, as we were not able to connect windows victims to our Linux server. Although we compiled bots on both python 2 and 3, and tried numerous workarounds suggested on Github, it simply would not work. Issues on the GitHub repository for the framework echo our own issues, yet remain unresolved. We raised an issue ourselves at the beginning of the semester, but it was not addressed at the time of writing this report.
+The botnet framework we chose to use is still very buggy. By the time we concluded that certain limitations could not be overcome, it was no longer an option to pivot the project to a new botnet framework. It turns out the cross platform compatibility of BYOB is not as it claims, as we were not able to connect windows victims to our Linux server. Although we compiled bots on both python 2 and 3, and tried numerous workarounds suggested on Github, it simply would not work. Issues [1](https://github.com/malwaredllc/byob/issues/92),[2](https://github.com/malwaredllc/byob/issues/164) on the GitHub repository for the framework echo our own issues, yet remain unresolved. We raised an issue ourselves at the beginning of the semester, but it was not addressed at the time of writing this report.
 
 ### Further  
 If we were to continue working on this project we would need to find a better botnet framework, or develop our own simple C&C server to handle reverse shells from victims. The bugs in BYOB are too numerous for its lack of support from the developer. 
