@@ -146,7 +146,7 @@ exec(eval(marshal.loads(zlib.decompress(base64.b64decode('eJwrtmBgYCgtyskvSM3TUM
 ### Mac (OSX) Payload
 In order to prevent the keyboard configuration dialog box from appearing when the DigiSpark is plugged into an Apple computer, we must configure the DigiSpark to appear as if it's an Apple keyboard.
 
-VID and PID are defined in the file `~/.arduino15/packages/digistump/hardware/avr/1.6.7/libraries/DigisparkKeyboard/usbconfig.h`. We will replace the existing file with a [modified Apple version](./scripts/Digispark/usbconfig.h) when compiling the script for OSX. When we change Vendor Name and Device Name, we also have to adapt the constants for the name length.
+VID and PID are defined in the file `~/.arduino15/packages/digistump/hardware/avr/1.6.7/libraries/DigisparkKeyboard/usbconfig.h`. We will replace the existing file with a *[modified Apple version](https://github.com/chris408/digispark-usbkey-board/blob/master/usbconfig.h)* when compiling the script for OSX. When we change Vendor Name and Device Name, we also have to adapt the constants for the name length.
 
 The following code is what we've developed to infect Apple OSX machines upon plugin.  
 ```c
@@ -265,7 +265,7 @@ We did attempt loading all of our payloads onto one device (Hail Mary). This fai
 
 ### BYOB Botnet   
 
-The botnet framework we chose to use is still very buggy. By the time we concluded that certain limitations could not be overcome, it was no longer an option to pivot the project to a new botnet framework. It turns out the cross platform compatibility of BYOB is not as it claims, as we were not able to connect windows victims to our Linux server. Although we compiled bots on both python 2 and 3, and tried numerous workarounds suggested on Github, it simply would not work. Issues [1](https://github.com/malwaredllc/byob/issues/92),[2](https://github.com/malwaredllc/byob/issues/164) on the GitHub repository for the framework echo our own issues, yet remain unresolved. We raised an issue ourselves at the beginning of the semester, but it was not addressed at the time of writing this report.
+The botnet framework we chose to use is still very buggy. By the time we concluded that certain limitations could not be overcome, it was no longer an option to pivot the project to a new botnet framework. It turns out the cross platform compatibility of BYOB is not as it claims, as we were not able to connect windows victims to our Linux server. Although we compiled bots on both python 2 and 3, and tried numerous workarounds suggested on Github, it simply would not work. Issues *[1](https://github.com/malwaredllc/byob/issues/92), [2](https://github.com/malwaredllc/byob/issues/164)* on the *[GitHub repository](https://github.com/malwaredllc/byob)* for the framework echo our own issues, yet remain unresolved. We raised an issue ourselves at the beginning of the semester, but it was not addressed at the time of writing this report.
 
 ### Further  
 If we were to continue working on this project we would need to find a better botnet framework, or develop our own simple C&C server to handle reverse shells from victims. The bugs in BYOB are too numerous for its lack of support from the developer.
