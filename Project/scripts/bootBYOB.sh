@@ -1,2 +1,2 @@
 #!/bin/bash
-cd /opt/byob/byob && python server.py --port 1337
+cd /opt/byob/byob && python server.py --host sheep.casa --port 1337

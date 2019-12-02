@@ -5,7 +5,7 @@ The objective of this project was to create BadUSB devices, that upon plugin, in
 
 
 
-## Botnet C&C 
+## Botnet C&C
 For our botnet we're using [Build Your Own Botnet](https://github.com/malwaredllc/byob). Our ultimate goal was an easily deployed and managed *command and control server*, with the ability to generate cross platform compatible clients.
 
 
@@ -26,7 +26,7 @@ We've created a VPS on Digital Ocean to run our C&C server. We're using an Ubunt
 
 The botnet framework we chose (BYOB) was installed via `git clone git@github.com:malwaredllc/byob.git && cd ./byob/byob && pip install -r requirements.txt &&  mv ../../byob /opt/`. This clones the repository, installs the required python modules, and moves the directory to into `/opt`.  
 
-To launch the botnet we've created a bash script setting the host to `sheep.casa` and the listening port to `1337`. This script is placed in the `/root` directory. 
+To launch the botnet we've created a bash script setting the host to `sheep.casa` and the listening port to `1337`. This script is placed in the `/root` directory.
 
 ```bash
 #!/bin/bash
@@ -41,8 +41,8 @@ cd /opt/byob/byob && python server.py --port 1337
 ## BadUSB  
 To create our BadUSB devices we've used the [DigiSpark](http://digistump.com/products/1) development board by [Digistump](http://digistump.com/). These devices are recognized as USB keyboards by the victims' machines, and will execute keystrokes to deliver our payload.
 
-### DigiSpark Setup 
-We've purchased our BadUSB (DigiSpark) devices via Amazon. We have 12 of these devices spread across our members. They cost about $3 dollars each. 
+### DigiSpark Setup
+We've purchased our BadUSB (DigiSpark) devices via Amazon. We have 12 of these devices spread across our members. They cost about $3 dollars each.
 
 ![amazon](./images/amazon.png)
 **Figure 4:** DigiSpark boards on Amazon.
@@ -71,10 +71,10 @@ The following code is what we've developed to infect Linux machines upon plugin.
 
 
 /***
- * 
+ *
  * This is an attack for Linux machines. It opens up a terminal window. It then downloads the loader, sets it to executable,
  * executes it, and closes the terminal window.
- * 
+ *
  ***/
 
 void setup() {
@@ -139,10 +139,10 @@ The following code is what we've developed to infect Apple OSX machines upon plu
 #include "DigiKeyboard.h"
 
 /***
- * 
+ *
  * This is an attack for Mac (OSX) machines. It opens up a terminal window, and executes the bash command. It then downloads the loader, sets it to executable,
  * executes it, and closes the terminal window.
- * 
+ *
  ***/
 
 #define MOD_CMD_LEFT 0x00000008
@@ -179,8 +179,8 @@ As you can see above, is very similar to what we've used to exploit Linux machin
 
 After this, in order to ensure we aren't using Z Shell, we'll enter `bash`. From this point on the rest of the code is exactly the same as our Linux payload. It too downloads `linux_loader`, which downloads and runs `linux_payload.py`.  
 
- 
-### Windows 
+
+### Windows
 Below is the DigiSpark payload we developed to infect Windows victims.
 ```c
 #include "DigiKeyboard.h"
@@ -223,16 +223,14 @@ To generate a Windows client for our botnet, we must run the code from a Windows
 ## Examples
 
 ### Video
-TODO
 
-### Linux 
-Below is an example of a client connecting to the C&C server. This is actually Ryan's laptop connecting, after plugging the BadUSB device into it. 
+[https://sheep.casa/csc154_project.m4v](https://sheep.casa/csc154_project.m4v)
+
+### Linux/OSX
+Below is an example of a client connecting to the C&C server. This is actually Ryan's laptop connecting, after plugging the BadUSB device into it.
 
 ![infected](./images/infected.png)
 **Figure 11:** Session on x at wartop (Ryan's Laptop).  
-
-### OSX  
-TODO
 
 ### Windows   
 Below is an example of a Windows client connecting to a Windows C&C host,  
@@ -247,15 +245,15 @@ We've configured our BadUSB devices to infect Linux, Windows and OSX machines. U
 ### Limitations
 
 #### BadUSB
-Ideally, the same BadUSB device would be able to infect Windows, OSX, and Linux. However, from what we've researched this may not be technically achievable given the way USB functions. There seems to be no way to query information from the machine, the device simply sends keystrokes blindly. At this time a DigiSpark must be configured to infect one specific operating system, because currently we do not have knowledge of how to detect which operating system a victim's computer is running. 
+Ideally, the same BadUSB device would be able to infect Windows, OSX, and Linux. However, from what we've researched this may not be technically achievable given the way USB functions. There seems to be no way to query information from the machine, the device simply sends keystrokes blindly. At this time a DigiSpark must be configured to infect one specific operating system, because currently we do not have knowledge of how to detect which operating system a victim's computer is running.
 
-We did attempt loading all of our payloads onto one device (Hail Mary). This failed because arbitrary keystrokes were executed on a machine either before or after that machine's OS specific code was run. This resulted in unpredictable behavior, which prevented even the correct code from executing sometimes. 
+We did attempt loading all of our payloads onto one device (Hail Mary). This failed because arbitrary keystrokes were executed on a machine either before or after that machine's OS specific code was run. This resulted in unpredictable behavior, which prevented even the correct code from executing sometimes.
 
 #### BYOB Botnet
 The botnet framework we chose to use is still very buggy. By the time we concluded that certain limitations could not be overcome, it was no longer an option to pivot the project to a new botnet framework. It turns out the cross platform compatibility of BYOB is not as it claims, as we were not able to connect windows victims to our Linux server. Although we compiled bots on both python 2 and 3, and tried numerous workarounds suggested on Github, it simply would not work. Issues [1](https://github.com/malwaredllc/byob/issues/92),[2](https://github.com/malwaredllc/byob/issues/164) on the GitHub repository for the framework echo our own issues, yet remain unresolved. We raised an issue ourselves at the beginning of the semester, but it was not addressed at the time of writing this report.
 
 ### Further  
-If we were to continue working on this project we would need to find a better botnet framework, or develop our own simple C&C server to handle reverse shells from victims. The bugs in BYOB are too numerous for its lack of support from the developer. 
+If we were to continue working on this project we would need to find a better botnet framework, or develop our own simple C&C server to handle reverse shells from victims. The bugs in BYOB are too numerous for its lack of support from the developer.
 
 We would still like to explore the ability to infect all operating systems using the same BadUSB device, but as we said, it couldn't be achieved at this time.
 
