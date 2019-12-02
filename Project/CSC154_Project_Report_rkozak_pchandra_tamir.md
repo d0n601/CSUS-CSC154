@@ -237,7 +237,7 @@ To generate a Windows client for our botnet, we must run the code from a Windows
 # Examples
 
 ## Demo Video
-[https://sheep.casa/csc154_project.m4v](https://sheep.casa/csc154_project.m4v)
+*[https://sheep.casa/csc154_project.m4v](https://sheep.casa/csc154_project.m4v)*
 
 ## Linux/OSX
 Below is an example of a client connecting to the C&C server. This is actually Ryan's laptop connecting, after plugging the BadUSB device into it.
