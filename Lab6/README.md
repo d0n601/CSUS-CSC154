@@ -58,7 +58,7 @@ To accomplish this, we repeat the previous task, but replace the `'xss'` string,
 In this and next task, we will perform an attack similar to what Samy did to MySpace in 2005 (i.e. the Samy Worm). First, we will write an XSS worm that does not self-propagate; in the next task, we will make it self-propagating. In this task, we need to write a malicious JavaScript program that forges HTTP requests directly from the victim's browser, without the intervention of the attacker. The objective of the attack is to modify the victim's profile and add Samy as a friend to the victim. 
 
 We can view the requests made to the server when adding a friend, by using the Live HTTP Headers plugin. In Figure 5 below, we're viewing the request made when Boby adds Alice as a friend.  
-![boby_added_alice](./writeup/images/boby_added_alice.png)  
+![add_friend_http_request](./writeup/images/add_friend_http_request.png)  
 **Figure 5:** HTTP Headers for friend request, Boby to Alice.  
 
 
